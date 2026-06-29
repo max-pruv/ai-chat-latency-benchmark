@@ -152,7 +152,7 @@
       <div class="badge b-live"><span class="d"></span>Live · native</div></div>
     <div class="kpi"><div class="accent" style="background:var(--yuma)"></div>
       <div class="name">Yuma</div><div class="client">EvryJewels · via Gorgias Chat</div>
-      <div class="val mono">13.8<span class="u">s</span></div><div class="sub">avg of 3 · single-block reply</div>
+      <div class="val mono">14.3<span class="u">s</span></div><div class="sub">avg of 6 · 1 no-reply · single block</div>
       <div class="badge b-none">Backend AI</div></div>
     <div class="kpi"><div class="accent" style="background:var(--ada)"></div>
       <div class="name">Ada</div><div class="client">Loop Earplugs</div>
@@ -176,8 +176,8 @@
           <div class="ctrack"><div class="cfill" style="--w:49%;width:49%;background:var(--siena)">9.8s</div></div>
           <div class="cnote">Simple Modern · 10 turns</div></div>
         <div class="crow"><div class="cl" style="color:var(--yuma)">Yuma</div>
-          <div class="ctrack"><div class="cfill" style="--w:69%;width:69%;background:var(--yuma)">13.8s</div></div>
-          <div class="cnote">EvryJewels · 3 turns</div></div>
+          <div class="ctrack"><div class="cfill" style="--w:72%;width:72%;background:var(--yuma)">14.3s</div></div>
+          <div class="cnote">EvryJewels · 7 turns</div></div>
         <div class="crow"><div class="cl" style="color:var(--ada)">Ada</div>
           <div class="ctrack"><div class="cfill down">Bot backend down during test — no measurement</div></div>
           <div class="cnote">Loop Earplugs</div></div>
@@ -190,7 +190,7 @@
     <div class="sec-head"><h2>Key findings</h2></div>
     <div class="card card-pad">
       <div class="callout p" style="margin-bottom:14px">
-        <strong>Yuma has no chat widget of its own.</strong> On EvryJewels (and Glossier) the on-site chat is <em>Gorgias Chat</em>; the AI auto-reply rides the Gorgias chat WebSocket and arrives as one block (no token streaming). It is a back-end automation layer, not a standalone chat product — and the slowest to a full answer (avg ~13.8s, up to ~18s).
+        <strong>Yuma has no chat widget of its own.</strong> On EvryJewels (and Glossier) the on-site chat is <em>Gorgias Chat</em>; the AI auto-reply rides the Gorgias chat WebSocket and arrives as one block (no token streaming). It is a back-end automation layer, not a standalone chat product — and the slowest to a full answer (avg ~14.3s, up to ~18s), with <strong>1 of 7 questions getting no in-chat reply at all</strong> within 70s.
       </div>
       <div class="callout">
         <strong>Ada was deployed but unavailable.</strong> Its bot returned <em>"experiencing technical difficulties"</em> on both EU and US Loop instances throughout the ~20-min window — an availability signal in itself. <strong>Sierra is fastest</strong> and the only one to stream tokens (first words in ~0.4s) and render <strong>interactive product cards with Add-to-Cart</strong> in chat.
@@ -208,12 +208,12 @@
         <tbody>
           <tr><td><span class="vdot" style="background:var(--sierra)"></span>Sierra</td><td>Casper</td><td class="n mono">7</td><td class="n mono">4.6</td><td class="n mono">7.4</td><td class="n mono">7.4</td><td class="n mono">9.7</td><td>Token streaming (SSE)</td></tr>
           <tr><td><span class="vdot" style="background:var(--siena)"></span>Siena</td><td>Simple Modern</td><td class="n mono">9*</td><td class="n mono">7.0</td><td class="n mono">9.8</td><td class="n mono">10.0</td><td class="n mono">11.3</td><td>Atomic (full message)</td></tr>
-          <tr><td><span class="vdot" style="background:var(--yuma)"></span>Yuma</td><td>EvryJewels</td><td class="n mono">3</td><td class="n mono">6.9</td><td class="n mono">13.8</td><td class="n mono">16.3</td><td class="n mono">18.1</td><td>Single block (WebSocket)</td></tr>
+          <tr><td><span class="vdot" style="background:var(--yuma)"></span>Yuma</td><td>EvryJewels</td><td class="n mono">6 / 7</td><td class="n mono">6.9</td><td class="n mono">14.3</td><td class="n mono">15.3</td><td class="n mono">18.1</td><td>Single block (WebSocket)</td></tr>
           <tr><td><span class="vdot" style="background:var(--ada)"></span>Ada</td><td>Loop Earplugs</td><td class="n mono">0</td><td colspan="5" style="color:var(--danger);font-weight:600">Bot backend unavailable ("technical difficulties") — EU + US</td></tr>
         </tbody>
       </table>
       </div>
-      <p class="note">All values in seconds. "Avg/Median/Max" = full response generated/rendered. * Siena: 10 turns run, 1 excluded as a measurement anomaly. Siena delivers the full message at once (first-byte ≈ complete); Sierra streams tokens (first byte ~0.4s, later completion); Yuma replies in a single WebSocket block after a back-end delay. The "complete" columns are directly comparable. Yuma = 3 turns (collection rate-limited); treat as directional.</p>
+      <p class="note">All values in seconds. "Avg/Median/Max" = full response generated/rendered. * Siena: 10 turns run, 1 excluded as a measurement anomaly. Siena delivers the full message at once (first-byte ≈ complete); Sierra streams tokens (first byte ~0.4s, later completion); Yuma replies in a single WebSocket block after a back-end delay. The "complete" columns are directly comparable. Yuma = 7 turns (6 answered, 1 got no in-chat reply within 70s).</p>
     </div>
   </section>
 
@@ -295,6 +295,10 @@ const SIENA=[
 const YUMA=[
  {q:"Do you offer free shipping?",lat:6908,a:"Yes, we offer free shipping! To qualify, your order subtotal must be at least $35 USD after discounts and before taxes. Add-on services like Package Protection and the 1 Year Warranty are excluded from this minimum."},
  {q:"What is your return policy?",lat:16310,a:"We do not offer any refunds, exchanges, or returns. This is stated on our website (refund-policy). Could you please let us know why you are requesting a return or refund?  — Evry Customer Specialist"},
+ {q:"Is your jewelry waterproof and safe to shower in?",lat:null,a:"⚠️ No in-chat reply within 70s — the question got no automated answer during the test window.",note:"no reply"},
+ {q:"Is the gold real gold or gold plated?",lat:14708,a:"Our jewelry features 18K gold plating! It is designed to be waterproof and skin-safe — nickel-free and lead-free — making it perfect for daily wear."},
+ {q:"How long does shipping take to the US?",lat:15909,a:"Provides the US shipping timeframe (fulfilment + transit window)."},
+ {q:"Can you recommend a necklace for a birthday gift?",lat:13807,a:"A necklace is such a thoughtful birthday gift! I highly recommend our custom name necklaces or a piece from our best-sellers collection. Do you have a specific style in mind?"},
  {q:"Are your rings adjustable or do they come in fixed sizes?",lat:18113,a:"Our rings come in both adjustable and fixed sizes, depending on the design! Many pieces, like the Double Date Ring, feature an adjustable design; other styles come in fixed sizes ranging from 5 to 9."},
 ];
 function lc(ms){if(ms==null)return'';if(ms<6000)return'l-fast';if(ms<10000)return'l-mid';if(ms<15000)return'l-slow';return'l-vslow';}

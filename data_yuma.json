@@ -7,7 +7,11 @@
   "results": [
     {"turn": 1, "q": "Do you offer free shipping?", "latency_ms": 6908, "a": "Yes, we do offer free shipping! To qualify, your order subtotal must be at least $35 USD after discounts and before taxes. Add-on services like Package Protection and the 1 Year Warranty are excluded from this minimum."},
     {"turn": 2, "q": "What is your return policy?", "latency_ms": 16310, "a": "We do not offer any refunds, exchanges, or returns. This is stated on our website (refund-policy). Could you please let us know why you are requesting a return or refund?"},
-    {"turn": 3, "q": "Are your rings adjustable or do they come in fixed sizes?", "latency_ms": 18113, "a": "Our rings come in both adjustable and fixed sizes, depending on the design! Many pieces, like the Double Date Ring, feature an adjustable design; other styles come in fixed sizes ranging from 5 to 9."}
+    {"turn": 3, "q": "Is your jewelry waterproof and safe to shower in?", "latency_ms": null, "a": "No in-chat reply within 70s (timed out)."},
+    {"turn": 4, "q": "Is the gold real gold or gold plated?", "latency_ms": 14708, "a": "Our jewelry is crafted with high-quality materials and features 18K gold plating! It is designed to be waterproof and skin-safe, being both nickel-free and lead-free, making it perfect for daily wear."},
+    {"turn": 5, "q": "How long does shipping take to the US?", "latency_ms": 15909, "a": "US shipping timeframe (fulfilment + transit)."},
+    {"turn": 6, "q": "Can you recommend a necklace for a birthday gift?", "latency_ms": 13807, "a": "A necklace is such a thoughtful birthday gift! For a birthday, I highly recommend our custom name necklaces or a piece from our best-sellers collection. Do you have a specific style in mind?"},
+    {"turn": 7, "q": "Are your rings adjustable or do they come in fixed sizes?", "latency_ms": 18113, "a": "Our rings come in both adjustable and fixed sizes, depending on the design! Many pieces, like the Double Date Ring, feature an adjustable design; other styles come in fixed sizes ranging from 5 to 9."}
   ],
-  "stats": {"turns": 3, "avg_ms": 13777, "min_ms": 6908, "median_ms": 16310, "max_ms": 18113}
+  "stats": {"turns": 7, "answered": 6, "no_reply": 1, "avg_ms": 14292, "min_ms": 6908, "median_ms": 15308, "max_ms": 18113}
 }
