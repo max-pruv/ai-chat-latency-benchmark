@@ -11,7 +11,7 @@
   :root{
     --bg:#f6f7f9;--surface:#fff;--surface-2:#f1f3f6;--line:#e6e8ee;
     --on:#0e1116;--on-muted:#5a6473;--on-faint:#8b94a3;--primary:#4f46e5;
-    --sierra:#0f766e;--siena:#4f46e5;--ada:#b45309;--yuma:#9333ea;--dg:#db2777;
+    --sierra:#0f766e;--siena:#4f46e5;--ada:#b45309;--yuma:#9333ea;--dg:#db2777;--gorgias:#15803d;
     --e8:0 8px 24px rgba(13,18,28,.08);--r:14px;
   }
   *{box-sizing:border-box;margin:0;padding:0}
@@ -23,7 +23,7 @@
   .hero .eyebrow{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#8b94a3}
   .hero h1{font-size:38px;font-weight:800;letter-spacing:-.025em;margin:14px auto 16px;max-width:680px;line-height:1.1}
   .hero p{font-size:16px;color:#aab2c0;max-width:600px;margin:0 auto;line-height:1.6}
-  .kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:-40px;position:relative;z-index:2}
+  .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:-40px;position:relative;z-index:2}
   .kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--e8);padding:20px;text-align:center;position:relative;overflow:hidden}
   .kpi .accent{position:absolute;top:0;left:0;right:0;height:4px}
   .kpi .v{font-size:26px;font-weight:800;letter-spacing:-.03em;margin-bottom:4px}
@@ -60,6 +60,7 @@
     <div class="kpi"><div class="accent" style="background:var(--sierra)"></div><div class="v mono" style="color:var(--sierra)">7.4s</div><div class="l">Sierra · Casper</div></div>
     <div class="kpi"><div class="accent" style="background:var(--siena)"></div><div class="v mono" style="color:var(--siena)">9.8s</div><div class="l">Siena · Simple Modern</div></div>
     <div class="kpi"><div class="accent" style="background:var(--dg)"></div><div class="v mono" style="color:var(--dg)">10.2s</div><div class="l">DigitalGenius · Bloom &amp; Wild</div></div>
+    <div class="kpi" style="outline:2px solid var(--gorgias)"><div class="accent" style="background:var(--gorgias)"></div><div class="v mono" style="color:var(--gorgias)">12.1s</div><div class="l">Gorgias · NouriVida (us)</div></div>
     <div class="kpi"><div class="accent" style="background:var(--yuma)"></div><div class="v mono" style="color:var(--yuma)">14.3s</div><div class="l">Yuma · EvryJewels</div></div>
     <div class="kpi"><div class="accent" style="background:var(--ada)"></div><div class="v mono" style="color:var(--ada)">down</div><div class="l">Ada · Loop</div></div>
   </div>
@@ -80,6 +81,7 @@
       <li><code>data_sierra.json</code><span>Sierra (Casper) raw latencies + recorded answers</span></li>
       <li><code>data_yuma.json</code><span>Yuma (EvryJewels) raw latencies + recorded answers</span></li>
       <li><code>data_digitalgenius.json</code><span>DigitalGenius (Bloom &amp; Wild) raw latencies + recorded answers</span></li>
+      <li><code>data_gorgias.json</code><span>Gorgias (NouriVida demo) raw latencies by question type + answers</span></li>
       <li><code>benchmark.py</code> / <code>benchmark.js</code><span>Siena methodology + reproducible browser runner</span></li>
       <li><a href="https://github.com/max-pruv/ai-chat-latency-benchmark">View the full source on GitHub →</a></li>
     </ul>

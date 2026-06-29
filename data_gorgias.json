@@ -1,0 +1,18 @@
+{
+  "vendor": "Gorgias",
+  "client": "NouriVida (Gorgias's official demo store)",
+  "agent": "Gorgias AI Agent",
+  "frontend": "Gorgias Chat (AI-powered) — WebSocket; conversation rendered in same-origin chat-window iframe",
+  "metric": "send -> reply text rendered in chat-window iframe (textContent growth + stability)",
+  "note": "NouriVida is Gorgias's own demo storefront, so this reflects a best-case, sales-tuned configuration. The agent consistently renders product cards, recommends specific SKUs with links, and offers discount codes — even appending upsells to policy answers.",
+  "results": [
+    {"turn": 1, "q": "Do you offer free shipping?", "type": "FAQ", "latency_ms": null, "a": "Yes. Shipping is free on orders over $100 in North America ($9.99 under $100). International: free over $200, $19.99 under. (answered; first turn, not cleanly timed)"},
+    {"turn": 2, "q": "I have low energy in the afternoon. Which product do you recommend?", "type": "product-rec", "latency_ms": 17580, "a": "Rendered a product card (Complete Meal Powder – Matcha $6.99) + 'For an afternoon boost, go with Complete Meal Powder – Matcha… clean, steady fuel.' with product link and an 8% off code."},
+    {"turn": 3, "q": "What is your return policy?", "type": "policy", "latency_ms": 13454, "a": "We accept returns — just let us know. (Then upsold: 'Complete Meal Powder – Matcha is still a strong pick. Ready to grab it with your 8% code?')"},
+    {"turn": 4, "q": "Are your products vegan and gluten-free?", "type": "FAQ", "latency_ms": 5478, "a": "Most of our range is plant-based, so vegan options are available. No gluten-free confirmation for every product. (Rendered cards: Berry Boost, Complete Daily Essentials.)"},
+    {"turn": 5, "q": "What do you recommend to help me sleep better?", "type": "product-rec", "latency_ms": 16607, "a": "If you want something more calming in the evening, Golden Milk – Turmeric Glow looks like the best fit [link]. Also suggested the Functional Cartons collection."},
+    {"turn": 6, "q": "How long does shipping take?", "type": "FAQ", "latency_ms": 7243, "a": "Orders usually arrive in 5–7 business days within North America; international 14–21 business days."}
+  ],
+  "stats": {"turns_timed": 5, "avg_ms": 12072, "min_ms": 5478, "max_ms": 17580, "by_type": {"FAQ_avg_ms": 6360, "policy_ms": 13454, "product_rec_avg_ms": 17094}},
+  "features": "Renders product cards with price, recommends specific SKUs with links, applies discount codes, offers add-to-cart/checkout nudges, and provides quick-reply chips."
+}
