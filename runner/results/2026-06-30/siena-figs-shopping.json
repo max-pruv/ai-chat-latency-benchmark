@@ -1,0 +1,142 @@
+{
+  "key": "siena-figs",
+  "vendor": "Siena",
+  "store": "FIGS",
+  "url": "https://www.wearfigs.com/pages/men-home",
+  "us": false,
+  "widget": "siena",
+  "mode": "shopping",
+  "date": "2026-06-30",
+  "turns": [
+    {
+      "turn": 1,
+      "q": "Hi! I'm shopping but not sure what's right for me — can you help me choose?",
+      "by": "ai",
+      "ttft_ms": null,
+      "complete_ms": null,
+      "grew": 0,
+      "ai_latency_ms": null,
+      "handover": false,
+      "handover_hit": null,
+      "replyTail": ""
+    },
+    {
+      "turn": 2,
+      "q": "I want something for everyday use, good quality, and I care about value for money — what do you recommend?",
+      "by": "ai",
+      "ttft_ms": null,
+      "complete_ms": null,
+      "error": "TimeoutError: locator.type: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('textarea, input[type=\"text\"], [",
+      "ai_latency_ms": null,
+      "handover": false,
+      "handover_hit": null,
+      "replyTail": ""
+    },
+    {
+      "turn": 3,
+      "q": "I'd like to stay within a sensible budget. What are my best options in that range?",
+      "by": "ai",
+      "ttft_ms": null,
+      "complete_ms": null,
+      "error": "TimeoutError: locator.type: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('textarea, input[type=\"text\"], [",
+      "ai_latency_ms": null,
+      "handover": false,
+      "handover_hit": null,
+      "replyTail": ""
+    },
+    {
+      "turn": 4,
+      "q": "Can you compare your two most popular options and tell me which is better for me?",
+      "by": "ai",
+      "ttft_ms": null,
+      "complete_ms": null,
+      "error": "TimeoutError: locator.type: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('textarea, input[type=\"text\"], [",
+      "ai_latency_ms": null,
+      "handover": false,
+      "handover_hit": null,
+      "replyTail": ""
+    },
+    {
+      "turn": 5,
+      "q": "I'm a little worried about quality and whether it'll suit me — what do other customers say in their reviews?",
+      "by": "ai",
+      "ttft_ms": null,
+      "complete_ms": null,
+      "error": "TimeoutError: locator.type: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('textarea, input[type=\"text\"], [",
+      "ai_latency_ms": null,
+      "handover": false,
+      "handover_hit": null,
+      "replyTail": ""
+    },
+    {
+      "turn": 6,
+      "q": "Is there anything that pairs well with it or completes the set?",
+      "by": "ai",
+      "ttft_ms": null,
+      "complete_ms": null,
+      "error": "TimeoutError: locator.type: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('textarea, input[type=\"text\"], [",
+      "ai_latency_ms": null,
+      "handover": false,
+      "handover_hit": null,
+      "replyTail": ""
+    },
+    {
+      "turn": 7,
+      "q": "Is there a bundle or set that's better value than buying the pieces separately?",
+      "by": "ai",
+      "ttft_ms": null,
+      "complete_ms": null,
+      "error": "TimeoutError: locator.type: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('textarea, input[type=\"text\"], [",
+      "ai_latency_ms": null,
+      "handover": false,
+      "handover_hit": null,
+      "replyTail": ""
+    },
+    {
+      "turn": 8,
+      "q": "Which one is your overall best seller, and is it well reviewed?",
+      "by": "ai",
+      "ttft_ms": null,
+      "complete_ms": null,
+      "error": "TimeoutError: locator.type: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('textarea, input[type=\"text\"], [",
+      "ai_latency_ms": null,
+      "handover": false,
+      "handover_hit": null,
+      "replyTail": ""
+    },
+    {
+      "turn": 9,
+      "q": "Okay, can you add your top recommendation to my cart?",
+      "by": "ai",
+      "ttft_ms": null,
+      "complete_ms": null,
+      "error": "TimeoutError: locator.type: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('textarea, input[type=\"text\"], [",
+      "ai_latency_ms": null,
+      "handover": false,
+      "handover_hit": null,
+      "replyTail": ""
+    },
+    {
+      "turn": 10,
+      "q": "What's my total, and do you offer free shipping or a first-order discount?",
+      "by": "ai",
+      "ttft_ms": null,
+      "complete_ms": null,
+      "error": "TimeoutError: locator.type: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('textarea, input[type=\"text\"], [",
+      "ai_latency_ms": null,
+      "handover": false,
+      "handover_hit": null,
+      "replyTail": ""
+    }
+  ],
+  "stats": {
+    "turns": 10,
+    "answered_no_handover": 0,
+    "success_rate": 0,
+    "avg_ms": null,
+    "min_ms": null,
+    "max_ms": null,
+    "latency_basis": "AI turns only (human replies excluded)",
+    "handover_turn": null
+  }
+}

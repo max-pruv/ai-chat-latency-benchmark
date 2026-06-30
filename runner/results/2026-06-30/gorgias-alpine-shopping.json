@@ -1,0 +1,142 @@
+{
+  "key": "gorgias-alpine",
+  "vendor": "Gorgias",
+  "store": "Alpine Hearing Protection",
+  "url": "https://www.alpinehearingprotection.com/",
+  "us": true,
+  "widget": "gorgias",
+  "mode": "shopping",
+  "date": "2026-06-30",
+  "turns": [
+    {
+      "turn": 1,
+      "q": "Hi! I'm shopping but not sure what's right for me — can you help me choose?",
+      "by": "ai",
+      "ttft_ms": null,
+      "complete_ms": null,
+      "grew": 46,
+      "ai_latency_ms": null,
+      "handover": false,
+      "handover_hit": null,
+      "replyTail": "Track orders\nThis chat is AI-powered for faster assistance.\nPrivacy Policy Disclaimer\nBy using this chat, you agree to our Privacy Policy.\n6:32 PM. You said:\n\nHi! I'm shopping but not sure what's right for me — can you help me choose?\n\n⚠️\nMessage not delivered.\nClick to retry.\nMessage not delivered."
+    },
+    {
+      "turn": 2,
+      "q": "I want something for everyday use, good quality, and I care about value for money — what do you recommend?",
+      "by": "ai",
+      "ttft_ms": 353,
+      "complete_ms": 7879,
+      "grew": 146,
+      "ai_latency_ms": 7879,
+      "handover": false,
+      "handover_hit": null,
+      "replyTail": ". You said:\n\nHi! I'm shopping but not sure what's right for me — can you help me choose?\n\n⚠️\nMessage not delivered.\nClick to retry.\nMessage not delivered.\n6:33 PM. You said:\n\nI want something for everyday use, good quality, and I care about value for money — what do you recommend?\n\n06:33 PM\nThinking"
+    },
+    {
+      "turn": 3,
+      "q": "I'd like to stay within a sensible budget. What are my best options in that range?",
+      "by": "ai",
+      "ttft_ms": 358,
+      "complete_ms": 632,
+      "grew": 433,
+      "ai_latency_ms": 632,
+      "handover": false,
+      "handover_hit": null,
+      "replyTail": "n, we first need 3 quick details:\nWho is it for?\nWhat will you use it for most often? For example sleep, focus, festivals, work, travel, swimming.\nWhat matters most to you besides value for money? For example maximum comfort, strongest noise reduction, easy conversations, or reusable tips.\n\n06:33 PM"
+    },
+    {
+      "turn": 4,
+      "q": "Can you compare your two most popular options and tell me which is better for me?",
+      "by": "ai",
+      "ttft_ms": 374,
+      "complete_ms": 4872,
+      "grew": 594,
+      "ai_latency_ms": 4872,
+      "handover": false,
+      "handover_hit": null,
+      "replyTail": "ne PartyPlug or Alpine PartyPlug Pro\n• Travel: Alpine FlyFit\n• DIY or loud work: Alpine WorkSafe\n\nIf you want the strongest value for money across everyday situations, Alpine Silence is usually the safest pick because it is versatile and suitable for both focus and general noise reduction.\n\n06:33 PM"
+    },
+    {
+      "turn": 5,
+      "q": "I'm a little worried about quality and whether it'll suit me — what do other customers say in their reviews?",
+      "by": "ai",
+      "ttft_ms": 382,
+      "complete_ms": 4498,
+      "grew": 148,
+      "ai_latency_ms": 4498,
+      "handover": false,
+      "handover_hit": null,
+      "replyTail": "veryday situations, Alpine Silence is usually the safest pick because it is versatile and suitable for both focus and general noise reduction.\n\n06:33 PM\n6:33 PM. You said:\n\nI'm a little worried about quality and whether it'll suit me — what do other customers say in their reviews?\n\n06:33 PM\nThinking"
+    },
+    {
+      "turn": 6,
+      "q": "Is there anything that pairs well with it or completes the set?",
+      "by": "ai",
+      "ttft_ms": 365,
+      "complete_ms": 4591,
+      "grew": 103,
+      "ai_latency_ms": 4591,
+      "handover": false,
+      "handover_hit": null,
+      "replyTail": "t concerts, events, or loud social settings where sound quality matters\n\nFor your situation, Alpine Silence is the better fit if you want the safest all-round choice on a sensible budget.\n\n06:34 PM\n6:34 PM. You said:\n\nIs there anything that pairs well with it or completes the set?\n\n06:34 PM\nThinking"
+    },
+    {
+      "turn": 7,
+      "q": "Is there a bundle or set that's better value than buying the pieces separately?",
+      "by": "ai",
+      "ttft_ms": 401,
+      "complete_ms": 4604,
+      "grew": 445,
+      "ai_latency_ms": 4604,
+      "handover": false,
+      "handover_hit": null,
+      "replyTail": "es:\n\n• A pouch, travel box, or lanyard for safe storage and carrying\n• Alpine Clean spray to keep them hygienic and help extend their lifespan\n\nIf you are leaning toward Alpine Silence as your main pick, a storage option plus Alpine Clean spray is the most practical combo for everyday use.\n\n06:34 PM"
+    },
+    {
+      "turn": 8,
+      "q": "Which one is your overall best seller, and is it well reviewed?",
+      "by": "ai",
+      "ttft_ms": 392,
+      "complete_ms": 5711,
+      "grew": 519,
+      "ai_latency_ms": 5711,
+      "handover": false,
+      "handover_hit": null,
+      "replyTail": "15% off\n• 4 or more items: 20% off\n\nThe discount is applied automatically in the cart. Accessories, licensed products, and custom-made items are excluded.\n\nSo if you are considering Alpine Silence plus another core product for a different use, that is usually where the better value starts.\n\n06:34 PM"
+    },
+    {
+      "turn": 9,
+      "q": "Okay, can you add your top recommendation to my cart?",
+      "by": "ai",
+      "ttft_ms": 353,
+      "complete_ms": 658,
+      "grew": 93,
+      "ai_latency_ms": 658,
+      "handover": false,
+      "handover_hit": null,
+      "replyTail": "ories, licensed products, and custom-made items are excluded.\n\nSo if you are considering Alpine Silence plus another core product for a different use, that is usually where the better value starts.\n\n06:34 PM\n6:34 PM. You said:\n\nOkay, can you add your top recommendation to my cart?\n\n06:34 PM\nThinking"
+    },
+    {
+      "turn": 10,
+      "q": "What's my total, and do you offer free shipping or a first-order discount?",
+      "by": "ai",
+      "ttft_ms": 384,
+      "complete_ms": 8218,
+      "grew": 262,
+      "ai_latency_ms": 8218,
+      "handover": false,
+      "handover_hit": null,
+      "replyTail": " and louder social settings.\n\n06:34 PM\n6:34 PM. You said:\n\nWhat's my total, and do you offer free shipping or a first-order discount?\n\n06:34 PM\n\nI can help with product advice here, but I cannot add items to your cart from this chat. Our top recommendation for your needs is Alpine Silence.\n\n06:34 PM"
+    }
+  ],
+  "stats": {
+    "turns": 10,
+    "answered_no_handover": 9,
+    "success_rate": 90,
+    "avg_ms": 4629,
+    "min_ms": 632,
+    "max_ms": 8218,
+    "latency_basis": "AI turns only (human replies excluded)",
+    "handover_turn": null
+  }
+}

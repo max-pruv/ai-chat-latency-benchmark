@@ -26,6 +26,23 @@ async function dismiss(page) {
   }
 }
 
+// Some chats gate behind an email prechat form. Fill a dummy (reserved
+// example.com) address and submit so the conversation can start.
+async function fillEmailGate(page, frame) {
+  try {
+    const email = frame.locator('input[type="email"], input[placeholder*="@"], input[placeholder*="mail" i], input[name*="mail" i], input[aria-label*="mail" i]').first();
+    if (!(await email.count().catch(() => 0))) return false;
+    if (!(await email.isVisible().catch(() => false))) return false;
+    await email.click({ timeout: 3000 }).catch(() => {});
+    await email.fill(DUMMY.email).catch(async () => { await email.type(DUMMY.email).catch(() => {}); });
+    const btn = frame.locator('button:has-text("Start"), button:has-text("Submit"), button:has-text("Continue"), button:has-text("Chat"), button:has-text("Send"), button[type="submit"]').first();
+    if (await btn.count().catch(() => 0)) await btn.click({ timeout: 3000 }).catch(() => {});
+    else await page.keyboard.press("Enter").catch(() => {});
+    await page.waitForTimeout(2500);
+    return true;
+  } catch { return false; }
+}
+
 // ---------------------------------------------------------------------------
 // Widget harnesses
 // ---------------------------------------------------------------------------
@@ -44,6 +61,15 @@ export const WIDGETS = {
         for (let i = 0; i < 14 && !isOpen(); i++) { try { window.GorgiasChat.open(); } catch (e) {} await new Promise(r => setTimeout(r, 900)); }
       });
       await page.waitForTimeout(3500);
+      // If the conversation window didn't open, click the launcher button.
+      if (!(await findFrame(page, "chat-window"))) {
+        const fb = await findFrame(page, "chat-button");
+        if (fb) { try { await fb.locator('button, [role="button"], div').first().click({ timeout: 3000 }); } catch (e) {} }
+        await page.evaluate(() => { try { document.querySelector('#chat-button, [aria-label*="chat" i]')?.click?.(); } catch (e) {} });
+        await page.waitForTimeout(3500);
+      }
+      const f = await findFrame(page, "chat-window");
+      if (f) await fillEmailGate(page, f);   // dummy email if the chat gates on one
     },
     async send(page, text) {
       // The message box is the "Ask anything" textarea INSIDE the chat-window
@@ -116,7 +142,13 @@ export const WIDGETS = {
   // Siena — iframe (chat.siena.cx) + REST.
   siena: {
     scope: { kind: "frame", match: "siena.cx" },
-    async open(page) { await page.waitForTimeout(3500); await dismiss(page); await page.evaluate(() => { try { window.SienaLaunchChat?.(); } catch (e) {} }); await page.waitForTimeout(4000); },
+    async open(page) {
+      await page.waitForTimeout(3500); await dismiss(page);
+      await page.evaluate(() => { try { window.SienaLaunchChat?.(); } catch (e) {} });
+      await page.waitForTimeout(4000);
+      const f = page.frames().find(fr => fr.url().includes("siena.cx"));
+      if (f) await fillEmailGate(page, f);   // FIGS etc. gate on an email
+    },
     async send(page, text) {
       const f = page.frames().find(fr => fr.url().includes("siena.cx")); if (!f) return;
       const input = f.locator('textarea, input[type="text"], [contenteditable="true"]').first();
@@ -185,8 +217,11 @@ export const WIDGETS = {
 // ---------------------------------------------------------------------------
 export const STORES = [
   // Gorgias (us) — Glamnetic intentionally excluded
-  { key: "gorgias-madura",  vendor: "Gorgias", store: "Madura",        url: "https://www.madura.com/en",        widget: "gorgias", us: true, locale: "en-US" },
-  { key: "gorgias-masderm", vendor: "Gorgias", store: "Masderm",       url: "https://masderm.com/fr",           widget: "gorgias", us: true, locale: "fr-FR" },
+  { key: "gorgias-madura",   vendor: "Gorgias", store: "Madura",        url: "https://www.madura.com/en",            widget: "gorgias", us: true, locale: "en-US" },
+  { key: "gorgias-masderm",  vendor: "Gorgias", store: "Masderm",       url: "https://masderm.com/fr",               widget: "gorgias", us: true, locale: "fr-FR" },
+  { key: "gorgias-alpine",   vendor: "Gorgias", store: "Alpine Hearing Protection", url: "https://www.alpinehearingprotection.com/", widget: "gorgias", us: true },
+  { key: "gorgias-jade",     vendor: "Gorgias", store: "Jade",          url: "https://shop.jadeofficial.com/",       widget: "gorgias", us: true },
+  { key: "gorgias-jshealth", vendor: "Gorgias", store: "JSHealth Vitamins", url: "https://us.jshealthvitamins.com/", widget: "gorgias", us: true },
 
   // Spiffy.ai
   { key: "spiffy-supergoop", vendor: "Spiffy.ai", store: "Supergoop",  url: "https://supergoop.com/products/everyday-sunscreen?variant=31189086634082", widget: "spiffy" },
@@ -199,6 +234,7 @@ export const STORES = [
 
   // Siena
   { key: "siena-simplemodern", vendor: "Siena", store: "Simple Modern", url: "https://www.simplemodern.com/products/mesa-loop-30oz-49", widget: "siena" },
+  { key: "siena-figs",         vendor: "Siena", store: "FIGS",          url: "https://www.wearfigs.com/pages/men-home", widget: "siena" },
   { key: "siena-jonesroad",    vendor: "Siena", store: "Jones Road",    url: "https://www.jonesroadbeauty.com/", widget: "siena", candidate: true },
 
   // Yuma (runs behind a helpdesk; 2nd drivable store TBD)

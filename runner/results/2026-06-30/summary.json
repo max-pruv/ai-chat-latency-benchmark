@@ -2,32 +2,18 @@
   "date": "2026-06-30",
   "perStore": [
     {
-      "key": "gorgias-masderm",
+      "key": "gorgias-jshealth",
       "vendor": "Gorgias",
-      "store": "Masderm",
+      "store": "JSHealth Vitamins",
       "us": true,
-      "mode": "support",
+      "mode": "shopping",
       "turns": 10,
       "answered_no_handover": 0,
       "success_rate": 0,
       "avg_ms": null,
       "min_ms": null,
       "max_ms": null,
-      "handover_turn": null,
-      "error": null
-    },
-    {
-      "key": "gorgias-madura",
-      "vendor": "Gorgias",
-      "store": "Madura",
-      "us": true,
-      "mode": "support",
-      "turns": 10,
-      "answered_no_handover": 0,
-      "success_rate": 0,
-      "avg_ms": null,
-      "min_ms": null,
-      "max_ms": null,
+      "latency_basis": "AI turns only (human replies excluded)",
       "handover_turn": null,
       "error": null
     }
@@ -35,8 +21,8 @@
   "perVendor": [
     {
       "vendor": "Gorgias",
-      "mode": "support",
-      "stores": 2,
+      "mode": "shopping",
+      "stores": 1,
       "avg_success_rate": 0,
       "avg_latency_ms": null
     }
