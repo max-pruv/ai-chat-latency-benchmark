@@ -20,6 +20,30 @@ import { SUPPORT, SHOPPING } from "./pools.js";
 
 const POLL_MS = 250, STABLE_MS = 4000, TURN_TIMEOUT_MS = 60000, GROWTH = 40;
 
+// ---- Handover / escalation detection (RED FLAG) ----
+// None of the pool turns ask for a human, so any handover the assistant initiates
+// is unprompted = a real capability limitation: it couldn't handle the conversation.
+const HANDOVER_PATTERNS = [
+  /\bconnect you (with|to)\b/i,
+  /\bi('|’)?ll connect you\b/i,
+  /\btransfer(ring)? you (to|over)\b/i,
+  /\bspeak (to|with) (a|an|our|one of our) (human|agent|team|representative|specialist|advisor)/i,
+  /\b(submit|raise|create|open|log) a (support )?ticket\b/i,
+  /\bour (team|agents?|support team) (will|can) (get back|follow up|reach out|be in touch|contact|assist)/i,
+  /\ba (member|representative) of our team\b/i,
+  /\bplease (hold|wait)\b.*(agent|available|team|connect)/i,
+  /\b(fill (in|out)|complete) (the|this|a) form\b/i,
+  /\benter your details\b/i,
+  /\bshare (your|a few) (details|email|order number)\b.*(team|agent|connect|assist|follow)/i,
+  /\b(contact|reach out to) (our|the) (support|customer) (team|service)/i,
+  /\ball of our agents are (unavailable|busy)\b/i,
+];
+function detectHandover(text) {
+  if (!text) return null;
+  for (const re of HANDOVER_PATTERNS) { const m = text.match(re); if (m) return m[0].trim().slice(0, 80); }
+  return null;
+}
+
 const args = process.argv.slice(2);
 const pick = (flag) => { const i = args.indexOf(flag); return i >= 0 ? args.slice(i + 1).filter(a => !a.startsWith("--")) : null; };
 const vendorFilter = pick("--vendor");
@@ -61,9 +85,10 @@ async function runVendorMode(browser, key, mode) {
       let r;
       try { r = await timeTurn(page, v.scope, () => v.send(page, q)); }
       catch (e) { r = { ttft_ms: null, complete_ms: null, error: String(e).slice(0, 120) }; }
-      const tail = (await readTranscript(page, v.scope)).text.slice(-400);
-      out.turns.push({ turn: i + 1, q, ...r, replyTail: tail });
-      console.log(`  [${v.label}/${mode}] T${i + 1} complete=${r.complete_ms ?? "—"}ms`);
+      const tail = (await readTranscript(page, v.scope)).text.slice(-600);
+      const handover = detectHandover(tail);
+      out.turns.push({ turn: i + 1, q, ...r, handover: !!handover, handover_hit: handover, replyTail: tail });
+      console.log(`  [${v.label}/${mode}] T${i + 1} complete=${r.complete_ms ?? "—"}ms${handover ? "  ⛔ HANDOVER: " + handover : ""}`);
       await sleep(2500);
     }
   } catch (e) {
@@ -73,10 +98,20 @@ async function runVendorMode(browser, key, mode) {
     await context.close();
   }
   const valid = out.turns.map(t => t.complete_ms).filter(x => x != null);
-  out.stats = valid.length ? {
-    n: valid.length, avg_ms: Math.round(valid.reduce((a, b) => a + b, 0) / valid.length),
-    min_ms: Math.min(...valid), max_ms: Math.max(...valid),
-  } : { n: 0 };
+  const handoverTurns = out.turns.filter(t => t.handover).map(t => t.turn);
+  out.stats = {
+    n: valid.length,
+    avg_ms: valid.length ? Math.round(valid.reduce((a, b) => a + b, 0) / valid.length) : null,
+    min_ms: valid.length ? Math.min(...valid) : null,
+    max_ms: valid.length ? Math.max(...valid) : null,
+  };
+  // RED FLAG: the assistant handed the conversation to a human on its own.
+  out.red_flag = handoverTurns.length > 0;
+  out.handover_turns = handoverTurns;
+  if (out.red_flag) {
+    out.red_flag_note = `🚩 Handover to human on turn(s) ${handoverTurns.join(", ")} of ${out.turns.length} — the assistant could not handle the conversation itself` +
+      (mode === "shopping" ? " (failed to complete the sale)." : ".");
+  }
   return out;
 }
 
@@ -89,7 +124,7 @@ async function runVendorMode(browser, key, mode) {
       console.log(`▶ ${VENDORS[key].label} · ${mode}`);
       const res = await runVendorMode(browser, key, mode);
       await writeFile(`results/${STAMP}/${key}-${mode}.json`, JSON.stringify(res, null, 2));
-      console.log(`  → avg ${res.stats.avg_ms ?? "n/a"}ms over ${res.stats.n} turns\n`);
+      console.log(`  → avg ${res.stats.avg_ms ?? "n/a"}ms over ${res.stats.n} turns${res.red_flag ? "  🚩 RED FLAG: " + res.red_flag_note : ""}\n`);
     }
   }
   await browser.close();

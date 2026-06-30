@@ -29,6 +29,10 @@ Output: `runner/results/<YYYY-MM-DD>/<vendor>-<mode>.json` — per-turn `ttft_ms
 - `vendors.js` — per-vendor harness (open chat, send, where to read the transcript). Built from the reverse-engineering in the main report.
 - `run.js` — orchestrator: fresh cold context per vendor+mode, sends each turn, times reply by transcript growth+stability.
 
+## Conversations & the handover red flag
+- Pools are deliberately **complex**: compound, multi-constraint turns that build on prior answers, with objections and edge cases — a demanding shopper, not one-line FAQs.
+- **No turn ever asks for a human.** So if the assistant initiates a handover ("I'll connect you with our team", "submit a support ticket", a lead-capture form, "all our agents are unavailable"…), the runner detects it and marks `handover: true` on that turn and `red_flag: true` on the vendor — a real capability limitation (it couldn't handle the conversation / couldn't complete the sale). Genuine answers (e.g. a blunt no-returns policy) are *not* flagged.
+
 ## Maintenance note
 Chat widgets change their DOM/SDK over time, so `vendors.js` selectors are the part to keep current. Each vendor fails soft (records `null` + an `error`) so one broken widget never aborts the run. Ada is included but its bot was down during initial testing — expect nulls until it recovers.
 

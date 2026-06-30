@@ -175,8 +175,8 @@ const DATA = {
       gorgias:{lat:17.1, q:5.0, qnote:"Best rec quality: card + SKU link + discount code + CTA"},
       yuma:{lat:13.8, q:2.7, qnote:"Only gestures at collections, no specific item"},
       siena:{lat:10.0, q:1.0, qnote:"Defers product questions to product pages"},
-      dg:{lat:null, q:0, qnote:"Escalates to a human (no in-chat rec)"},
-      meta:{lat:null, q:0, qnote:"Escalates to a human lead form (no rec)"},
+      dg:{lat:null, q:0, qnote:"🚩 Hands off to a human (no in-chat rec)"},
+      meta:{lat:null, q:0, qnote:"🚩 Hands off to a human lead form (no rec)"},
       ada:{lat:"down", q:null, qnote:"Backend down both test days"},
     },
     conv:{
@@ -248,7 +248,7 @@ function render(){
     ? 'Showing discovery conversations where the shopper asks for a product recommendation.'
     : 'Showing pure support questions — shipping and returns/policy.';
   document.getElementById('lat-lead').innerHTML = isShop
-    ? 'Time to a full <strong>product recommendation</strong>. Hatched = the assistant <strong>doesn\'t recommend</strong> (escalates to a human). Lower is better — but only if it actually recommends.'
+    ? 'Time to a full <strong>product recommendation</strong>. 🚩 = the assistant <strong>hands off to a human</strong> instead of recommending — a real capability limitation (it can\'t complete the sale), not a fast result. Lower is better, but only if it actually recommends.'
     : 'Time to a full answer on shipping / returns questions. Lower is better.';
   document.getElementById('q-lead').innerHTML = isShop
     ? 'Quality of the <strong>product recommendation</strong> (specificity + a real path to buy). 0 = escalated / no recommendation.'
@@ -260,7 +260,7 @@ function render(){
   chart.innerHTML = D.order.map(k=>{
     const r=D.rows[k], v=V[k];
     if(r.lat==='down') return `<div class="crow"><div class="cl" style="color:${v.color}">${v.name}${v.us?' · us':''}</div><div class="ctrack"><div class="cfill none" style="width:100%">⚠ backend down — not measurable</div></div><div class="cnote">${v.client}</div></div>`;
-    if(r.lat==null) return `<div class="crow"><div class="cl" style="color:${v.color}">${v.name}${v.us?' · us':''}</div><div class="ctrack"><div class="cfill none" style="width:100%">✋ doesn't recommend — escalates to a human</div></div><div class="cnote">${v.client}</div></div>`;
+    if(r.lat==null) return `<div class="crow"><div class="cl" style="color:${v.color}">${v.name}${v.us?' · us':''}</div><div class="ctrack"><div class="cfill none" style="width:100%">🚩 hands off to a human — capability limitation</div></div><div class="cnote">${v.client}</div></div>`;
     const pct=Math.min(100,(r.lat/maxLat)*100);
     return `<div class="crow"><div class="cl" style="color:${v.color}">${v.name}${v.us?' · us':''}</div><div class="ctrack"><div class="cfill" style="width:${pct}%;background:${v.color}">${r.lat.toFixed(1)}s</div></div><div class="cnote">${v.client}</div></div>`;
   }).join('');
