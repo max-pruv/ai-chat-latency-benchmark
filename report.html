@@ -99,6 +99,7 @@
 <section>
   <h2 class="sec">Results — per store</h2>
   <p class="lead">Each row is one live store. <strong>Latency</strong> = time to a full answer. <strong>Success</strong> = % of the 10 turns the AI answered itself with no human handover. Stores marked <span class="pill p-na">legacy</span> were measured earlier on a single conversation and are pending a standardized re-test; their success figure reflects observed handover behavior, not a precise 10-turn rate.</p>
+  <div class="toggle-tabs" id="store-filter"></div>
   <div class="card" style="overflow:hidden">
     <table id="results">
       <thead><tr>
@@ -262,9 +263,9 @@ function methodCell(s){
 (function(){
   let html='', lastV=null;
   STORES.forEach(s=>{
-    if(s.vendor!==lastV){ html+='<tr class="grp-row"><td colspan="5">'+s.vendor+'</td></tr>'; lastV=s.vendor; }
+    if(s.vendor!==lastV){ html+='<tr class="grp-row" data-v="'+s.vendor+'"><td colspan="5">'+s.vendor+'</td></tr>'; lastV=s.vendor; }
     const latBar = (typeof s.latPct==='number' && s.method!=='pending') ? '<div class="bar" style="display:inline-block;width:70px;vertical-align:middle"><i style="width:'+s.latPct+'%;background:'+(COL[s.vendor]||'#888')+'"></i></div> ' : '';
-    html+='<tr class="'+(s.method==='legacy'?'legacy':'')+'">'+
+    html+='<tr data-v="'+s.vendor+'" class="'+(s.method==='legacy'?'legacy':'')+'">'+
       '<td>'+vcell(s)+'</td>'+
       '<td class="hide-sm">'+methodCell(s)+'</td>'+
       '<td class="n mono">'+latBar+'<span style="font-weight:700">'+(s.lat||'—')+'</span></td>'+
@@ -279,7 +280,7 @@ function methodCell(s){
   const sym = v => v===1?'<span class="y">●</span>':v===0?'<span class="n">●</span>':'<span class="p">●</span>';
   let html='';
   STORES.filter(s=>s.method==='new'||s.method==='legacy').forEach(s=>{
-    html+='<tr><td><span class="vdot" style="background:'+(COL[s.vendor]||'#888')+'"></span>'+s.store+' <span class="site">'+s.vendor+'</span></td>'+
+    html+='<tr data-v="'+s.vendor+'"><td><span class="vdot" style="background:'+(COL[s.vendor]||'#888')+'"></span>'+s.store+' <span class="site">'+s.vendor+'</span></td>'+
       '<td>'+sym(s.caps.qr)+'</td><td>'+sym(s.caps.cards)+'</td><td>'+sym(s.caps.reviews)+'</td><td>'+sym(s.caps.completes)+'</td></tr>';
   });
   document.getElementById('matrix-body').innerHTML=html;
@@ -304,6 +305,19 @@ function showConv(id){
   document.getElementById('conv-tabs').innerHTML = CONV.map((s,i)=>'<button class="tab" data-id="'+s.id+'" aria-selected="'+(i===0)+'" onclick="showConv(\''+s.id+'\')">'+s.store+' · '+s.vendor+(s.us?' (us)':'')+'</button>').join('');
   if(CONV.length) showConv(CONV[0].id);
 })();
+// per-store / per-vendor filter for the results table + capability matrix
+(function(){
+  const vendors = [...new Set(STORES.map(s=>s.vendor))];
+  document.getElementById('store-filter').innerHTML =
+    '<button class="tab" data-v="__all" aria-selected="true" onclick="filterBy(\'__all\')">All stores</button>'+
+    vendors.map(v=>'<button class="tab" data-v="'+v+'" aria-selected="false" onclick="filterBy(\''+v.replace(/'/g,"\\'")+'\')"><span class="vdot" style="background:'+(COL[v]||'#888')+'"></span>'+v+'</button>').join('');
+})();
+function filterBy(v){
+  document.querySelectorAll('#store-filter .tab').forEach(b=>b.setAttribute('aria-selected', b.dataset.v===v));
+  document.querySelectorAll('#results-body tr, #matrix-body tr').forEach(tr=>{
+    tr.style.display = (v==='__all' || tr.dataset.v===v) ? '' : 'none';
+  });
+}
 </script>
 </body>
 </html>
