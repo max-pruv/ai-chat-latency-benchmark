@@ -7,7 +7,7 @@ Live, reproducible **latency + answer-quality** benchmark of competitor on-site 
 
 It measures end-to-end response **latency**, scores **answer quality** with a blind LLM-judge panel, and **red-flags** any assistant that hands the conversation to a human instead of doing the job.
 
-**📊 Live report:** https://max-pruv.github.io/ai-chat-latency-benchmark/
+**📊 Live report:** https://gorgias.github.io/ai-chat-latency-benchmark/
 &nbsp;&nbsp;(toggle Shopping Assistant ⇄ Support at the top)
 
 > Built by Gorgias R&D as competitor intelligence. Latency reflects specific test windows (2026-06-29/30) and varies with load, query type, and session state — treat cross-vendor numbers as **directional**, and read the per-question-type and quality sections, not just a single average.
