@@ -81,9 +81,8 @@ export const VENDORS = {
       await page.evaluate(() => window.dgchat?.methods?.launchWidget());
       await page.waitForTimeout(3500);
       // Prechat lead form (name + email) gates the assistant — fill dummy data.
-      const f = page.frames().find(fr => /digitalgenius/.test(fr.url()) && /widget/.test(fr.name() || fr.url()));
       try {
-        const frame = f || page.frames().find(fr => /digitalgenius/.test(fr.url()));
+        const frame = await findFrame(page, "dg-chat-widget-iframe");
         if (frame) {
           await frame.getByPlaceholder(/name/i).fill(DUMMY.name, { timeout: 4000 }).catch(() => {});
           await frame.getByPlaceholder(/email/i).fill(DUMMY.email, { timeout: 4000 }).catch(() => {});
@@ -93,8 +92,7 @@ export const VENDORS = {
       } catch {}
     },
     async send(page, text) {
-      const f = page.frames().find(fr => /digitalgenius/.test(fr.url()) && /widget/.test(fr.name() || fr.url())) ||
-                page.frames().find(fr => /digitalgenius/.test(fr.url()));
+      const f = await findFrame(page, "dg-chat-widget-iframe");
       if (!f) return;
       const input = f.getByPlaceholder(/type a message|message/i).first();
       await input.click({ timeout: 5000 }).catch(() => {});
@@ -109,7 +107,7 @@ export const VENDORS = {
     scope: { kind: "frame", match: "Messaging window" },
     async open(page) { await page.waitForTimeout(4000); await dismiss(page); await page.evaluate(() => window.zE && window.zE("messenger", "open")); await page.waitForTimeout(4000); },
     async send(page, text) {
-      const f = page.frames().find(fr => (fr.name() || "").includes("Messaging") || /zendesk|messaging/i.test(fr.url()));
+      const f = await findFrame(page, "Messaging window");
       if (!f) return;
       const input = f.getByPlaceholder(/type a message|message/i).first();
       await input.click({ timeout: 5000 }).catch(() => {});
@@ -134,10 +132,25 @@ export const VENDORS = {
   },
 };
 
+// Find a frame by element id / title / name / url (chat iframes are usually
+// identified by their element id or title, NOT by frame.name()).
+export async function findFrame(page, match) {
+  for (const f of page.frames()) {
+    if ((f.name() || "").includes(match) || f.url().includes(match)) return f;
+    try {
+      const el = await f.frameElement();
+      const id = (await el.getAttribute("id")) || "";
+      const title = (await el.getAttribute("title")) || "";
+      if (id.includes(match) || title.includes(match)) return f;
+    } catch {}
+  }
+  return null;
+}
+
 // Read the current transcript length for a vendor's scope (frame or shadow root).
 export async function readTranscript(page, scope) {
   if (scope.kind === "frame") {
-    const f = page.frames().find(fr => (fr.name() || "").includes(scope.match) || fr.url().includes(scope.match));
+    const f = await findFrame(page, scope.match);
     if (!f) return { len: 0, text: "" };
     try { const text = await f.evaluate(() => document.body.innerText || ""); return { len: text.length, text }; }
     catch { return { len: 0, text: "" }; }

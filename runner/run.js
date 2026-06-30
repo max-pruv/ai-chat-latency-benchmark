@@ -45,7 +45,7 @@ function detectHandover(text) {
 }
 
 const args = process.argv.slice(2);
-const pick = (flag) => { const i = args.indexOf(flag); return i >= 0 ? args.slice(i + 1).filter(a => !a.startsWith("--")) : null; };
+const pick = (flag) => { const i = args.indexOf(flag); if (i < 0) return null; const out = []; for (let j = i + 1; j < args.length && !args[j].startsWith("--"); j++) out.push(args[j]); return out; };
 const vendorFilter = pick("--vendor");
 const modeFilter = pick("--mode");
 const MODES = (modeFilter || ["support", "shopping"]);

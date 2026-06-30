@@ -182,18 +182,26 @@ const DATA = {
     conv:{
       sierra:[
         {q:"I'm a hot sleeper with lower back pain — which mattress do you recommend?",lat:9.7,a:"🛍️ [Interactive product cards: Snow / Snow Max — image, Select Size, Add to Cart] For hot sleepers with back pain, I recommend the Snow / Snow Max — cooling technology with strong support."},
+        {q:"Are your mattresses good for side sleepers?",lat:9.2,a:"Yes! Casper mattresses are designed to support all sleep positions, including side sleepers."},
         {q:"Can you recommend a pillow to go with it?",lat:6.7,a:"Absolutely — for hot sleepers, the Hybrid Snow Pillow or a cooling Foam Pillow would pair well."}],
       gorgias:[
-        {q:"I have low energy in the afternoon. Which product do you recommend?",lat:17.6,a:"🛍️ [Product card: Complete Meal Powder – Matcha $6.99] For an afternoon boost, go with Complete Meal Powder – Matcha — clean, steady fuel without the heavy slump. [product link] You can also use code …VK for 8% off. Ready to grab it now?"},
+        {q:"Hi, can you help me find the right product for me?",lat:null,a:"Of course! To point you the right way — are you after a quick energy drink or a more filling meal powder?",note:"clarifying"},
+        {q:"I'm training for a half marathon and keep crashing mid-afternoon.",lat:null,a:"🛍️ [Product card: Energy Drink – Berry Boost] For sustained energy on training days, Berry Boost is a strong fit — it has L-theanine for focus without the crash. [link] You can also use code …ML for 8% off. Ready to grab it?",note:"recommended"},
+        {q:"I have low energy in the afternoon — which product do you recommend?",lat:17.6,a:"🛍️ [Product card: Complete Meal Powder – Matcha $6.99] For an afternoon boost, go with Complete Meal Powder – Matcha — clean, steady fuel without the heavy slump. [link] Use code …VK for 8% off. Ready to grab it now?"},
         {q:"What do you recommend to help me sleep better?",lat:16.6,a:"For something calming in the evening, Golden Milk – Turmeric Glow looks like the best fit [link]. You can also browse our Functional Cartons collection."}],
       yuma:[
-        {q:"Can you recommend a necklace for a birthday gift?",lat:13.8,a:"A necklace is such a thoughtful birthday gift! I highly recommend our custom name necklaces or a piece from our best-sellers collection. Do you have a specific style in mind?"}],
+        {q:"Can you recommend a necklace for a birthday gift?",lat:13.8,a:"A necklace is such a thoughtful birthday gift! I highly recommend our custom name necklaces or a piece from our best-sellers collection. Do you have a specific style in mind?"},
+        {q:"Are your rings adjustable or do they come in fixed sizes?",lat:18.1,a:"Our rings come in both adjustable and fixed sizes, depending on the design! Many pieces (like the Double Date Ring) are adjustable; others come in fixed sizes 5–9."}],
       siena:[
-        {q:"Which colors does the Mesa Loop come in / what should I pick?",lat:10.0,a:"Lists 14+ color variants, each linked to its product page — but tends to point you to the product pages rather than make a single confident pick."}],
+        {q:"Does the Mesa Loop fit in a standard car cup holder?",lat:10.4,a:"Yes, the Mesa Loop 30oz is designed to fit most standard car cup holders!"},
+        {q:"Is the straw removable and dishwasher safe?",lat:9.7,a:"The straw isn't designed to be removed, but the lid (with straw) is top-rack dishwasher safe. Hand washing recommended."},
+        {q:"What's the difference between the 30oz and the 40oz?",lat:10.6,a:"The 30oz is the largest Mesa Loop size — there isn't a 40oz Mesa Loop. Happy to compare other bottles (Trek, Summit)."},
+        {q:"Does it keep drinks cold for 24 hours?",lat:10.1,a:"Yes — designed to keep drinks cold for up to 24 hours thanks to double-wall insulation."},
+        {q:"Is it leak-proof, and is the Almond Birch color in stock?",lat:9.2,a:"Not 100% sure on full leak-proofing, and no live stock signal in chat — recommend checking the product page. (Defers rather than picking.)"}],
       dg:[
-        {q:"What is your most popular bouquet?",lat:null,a:"❌ Did not recommend. 'To ensure you get the best possible assistance, I will connect you with one of our agents.' Agents unavailable → offered a support ticket and stopped answering."}],
+        {q:"What is your most popular bouquet?",lat:null,a:"❌ Did not recommend. 'To ensure you get the best possible assistance, I will connect you with one of our agents.' Agents unavailable → offered a support ticket and stopped answering. (Handover on turn 1 locks the chat.)",note:"handover"}],
       meta:[
-        {q:"I have dry, dull skin. Which product do you recommend?",lat:null,a:"❌ Did not recommend. 'Please share a few details and I'll connect you with someone from our team' → opened a human lead-capture form (Name/email). The escalation locked the chat."}],
+        {q:"I have dry, dull skin. Which product do you recommend?",lat:null,a:"❌ Did not recommend. 'Please share a few details and I'll connect you with someone from our team' → opened a human lead-capture form (Name/email). (Handover on turn 1 locks the chat.)",note:"handover"}],
       ada:[],
     }
   },
@@ -211,23 +219,30 @@ const DATA = {
     conv:{
       sierra:[
         {q:"Do you offer free shipping?",lat:5.0,a:"Free shipping on most products (contiguous US), except adjustable bases ($50) and bed frames/headboards ($25). Alaska & Hawaii: $20 small, $250 large. Return shipping always free. In-home setup $249."},
-        {q:"What is your trial period and return policy?",lat:4.6,a:"100-night trial. If you're not 100% in love after the first 30 nights, returns are free and easy. Furniture: 30-night trial (100 with a mattress). Soft goods: no trial, return unused within 30 days."}],
+        {q:"What is your trial period and return policy?",lat:4.6,a:"100-night trial. If you're not 100% in love after the first 30 nights, returns are free and easy. Furniture: 30-night trial (100 with a mattress). Soft goods: no trial, return unused within 30 days."},
+        {q:"Do you offer financing or payment plans?",lat:8.9,a:"Yes — Casper offers financing and payment plans through Affirm, Katapult and others at checkout."},
+        {q:"How long does delivery take once I order?",lat:7.4,a:"Most in-stock Casper products are delivered within 2–8 business days after the order ships."}],
       meta:[
         {q:"Do you offer free shipping?",lat:5.0,a:"Yes, we offer free shipping as one of our shipping options. (Vague — no threshold or method.)"},
         {q:"What is your return policy?",lat:5.0,a:"We gladly accept returns within 30 days of your order date. New or gently used items in original packaging; no return shipping, handling, or restocking fees. (+ View article)"}],
       gorgias:[
         {q:"Do you offer free shipping?",lat:6.4,a:"Free on orders over $100 in North America ($9.99 under). International: free over $200, $19.99 under."},
+        {q:"Are your products vegan and gluten-free?",lat:5.5,a:"🛍️ [Cards: Berry Boost, Complete Daily Essentials] Most of our range is plant-based, so vegan options are available. I don't have gluten-free confirmation for every product."},
         {q:"What is your return policy?",lat:13.5,a:"We accept returns — just let us know. (Then immediately upsells: 'Complete Meal Powder – Matcha is still a strong pick. Ready to grab it with your 8% code?')"},
         {q:"How long does shipping take?",lat:7.2,a:"5–7 business days within North America; international 14–21 business days."}],
       siena:[
         {q:"Do you offer free shipping on orders?",lat:10.0,a:"Free standard shipping on orders over $30 (contiguous 48). Under $30 is $4.99. Most orders arrive in 5–11 business days."},
-        {q:"Can I return it if I don't like the color?",lat:11.3,a:"You may be able to — it depends on your order. Could you share your email or order number so the team can confirm?"}],
+        {q:"How long does standard shipping usually take?",lat:7.0,a:"5–11 business days total: 1–3 to fulfil + 4–8 to ship."},
+        {q:"Can I return it if I don't like the color?",lat:11.3,a:"You may be able to — it depends on your order. Could you share your email or order number so the team can confirm? (Soft handover rather than stating the policy.)"}],
       dg:[
         {q:"Do you deliver next day in the UK?",lat:14.3,a:"Yes, next-day across most of the UK. Order by 10pm for central postcodes / 5:30pm for peripheral ones."},
         {q:"How much does delivery cost?",lat:11.9,a:"Royal Mail free; DPD All-day £5 Mon–Fri / £6 Sat–Sun; DPD Morning £6 / £10 Sat; XEROE (London) free; Ireland free Tue–Fri."},
-        {q:"How do I track my order?",lat:4.4,a:"Your order number is in your confirmation email or on your account."}],
+        {q:"How do I track my order?",lat:4.4,a:"Your order number is in your confirmation email or on your account."},
+        {q:"Do you offer same-day delivery?",lat:null,a:"We don't offer same-day delivery in any market. The earliest option is next-day delivery, provided the order is placed before the cut-off times.",note:"answered"}],
       yuma:[
         {q:"Do you offer free shipping?",lat:6.9,a:"Yes — free shipping when your subtotal is at least $35 (after discounts, before taxes). Add-ons like Package Protection and the 1-Year Warranty are excluded."},
+        {q:"Is the gold real gold or gold plated?",lat:14.7,a:"Our jewelry features 18K gold plating — waterproof and skin-safe (nickel-free, lead-free), made for daily wear."},
+        {q:"How long does shipping take to the US?",lat:15.9,a:"Provides the US shipping fulfilment + transit window."},
         {q:"What is your return policy?",lat:16.3,a:"We do not offer any refunds, exchanges, or returns (stated on our refund-policy page). Could you let us know why you're requesting a return?"}],
       ada:[],
     }
@@ -286,8 +301,11 @@ function showConv(k){
   const turns=DATA[mode].conv[k]||[];
   const bot = V[k].name+' · '+V[k].client.split('·').pop().trim();
   document.getElementById('conv-body').innerHTML = turns.map((t,i)=>{
-    const lat = t.lat==null ? "no rec" : t.lat.toFixed(1)+'s';
-    return `<div class="turn"><div class="th"><span class="tn">T${i+1}</span><span class="tq">${t.q}</span><span class="lat ${latClass(t.lat)}">${lat}</span></div>
+    let lat, cls;
+    if(t.lat!=null){ lat=t.lat.toFixed(1)+'s'; cls=latClass(t.lat); }
+    else if(t.note==='handover'){ lat='🚩 handover'; cls='l-none'; }
+    else { lat='⏱ n/a'; cls='l-mid'; }   // real reply, latency not cleanly timed
+    return `<div class="turn"><div class="th"><span class="tn">T${i+1}</span><span class="tq">${t.q}</span><span class="lat ${cls}">${lat}</span></div>
       <div class="msg u"><div class="av u">U</div><div><div class="mr">Shopper</div><div class="mt">${t.q}</div></div></div>
       <div class="msg b"><div class="av b">AI</div><div><div class="mr">${bot}</div><div class="mt">${t.a}</div></div></div></div>`;
   }).join('') || '<div class="emptymsg">No conversation recorded.</div>';
