@@ -27,6 +27,17 @@ const POLL_MS = 250, STABLE_MS = 4000, GROWTH = 60, SETTLE_MS = 2500;
 const TURN_TIMEOUT_MS = Number(process.env.TURN_TIMEOUT_MS) || 60000;
 // Real desktop UA — some chat widgets refuse to load for the default headless UA.
 const REAL_UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
+// Some AI widgets (Rep AI, Kodif, Humind…) refuse to load in headless — they
+// detect the headless browser. --headed launches the real Chrome binary with a
+// visible window (still a fresh context per run = cold), which they DO load.
+const HEADED = process.argv.includes("--headed") || process.env.HEADED === "1";
+// Anti-automation-detection: patch the obvious headless/automation tells.
+const STEALTH = () => {
+  Object.defineProperty(navigator, "webdriver", { get: () => undefined });
+  Object.defineProperty(navigator, "languages", { get: () => ["en-US", "en"] });
+  Object.defineProperty(navigator, "plugins", { get: () => [1, 2, 3, 4, 5] });
+  window.chrome = { runtime: {} };
+};
 
 // Unprompted handover = the assistant bailed to a human on its own (failure).
 const HANDOVER_PATTERNS = [
@@ -105,7 +116,8 @@ async function runStoreMode(browser, store, mode) {
   // IndexedDB/cache for ANY origin (the widget's cross-origin storage included),
   // so there is never a pre-existing conversation. storageState is left undefined
   // (no profile) and we clear cookies as belt-and-suspenders.
-  const context = await browser.newContext({ viewport: { width: 1280, height: 900 }, locale: store.locale || "en-US", userAgent: REAL_UA, storageState: undefined });
+  const context = await browser.newContext({ viewport: { width: 1366, height: 900 }, locale: store.locale || "en-US", timezoneId: "America/New_York", userAgent: REAL_UA, extraHTTPHeaders: { "Accept-Language": "en-US,en;q=0.9" }, storageState: undefined });
+  await context.addInitScript(STEALTH);
   await context.clearCookies().catch(() => {});
   const page = await context.newPage();
 
@@ -192,7 +204,11 @@ async function runStoreMode(browser, store, mode) {
 }
 
 (async () => {
-  const browser = await chromium.launch({ headless: true });
+  let browser;
+  const launchOpts = { headless: !HEADED, args: ["--disable-blink-features=AutomationControlled"] };
+  try { browser = await chromium.launch({ ...launchOpts, channel: HEADED ? "chrome" : undefined }); }
+  catch (e) { browser = await chromium.launch(launchOpts); }
+  console.log(HEADED ? "Running HEADED (visible Chrome) — bot-blocked widgets load here." : "Running headless.");
   await mkdir(`results/${STAMP}`, { recursive: true });
   const summary = [];
 
