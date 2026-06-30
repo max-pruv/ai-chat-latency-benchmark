@@ -32,6 +32,9 @@
   .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--e8)}
   table{width:100%;border-collapse:collapse;font-size:13.5px}
   thead th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--on-faint);padding:12px 14px;border-bottom:1px solid var(--line)}
+  th.srt{cursor:pointer;user-select:none}
+  th.srt:hover{color:var(--on-muted)}
+  th .sc{font-size:9px;margin-left:4px;color:var(--primary)}
   thead th.n{text-align:right}
   tbody td{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
   tbody tr:last-child td{border-bottom:none}
@@ -112,7 +115,12 @@
   <h2 class="sec">Summary — by vendor</h2>
   <p class="lead">One line per vendor, <strong>averaged across the stores tested in this mode</strong>. Drill into individual stores in the table below. (Legacy single-store success is mapped to a proxy: completed = 100%, partial = 50%, handover = 0%.)</p>
   <div class="card" style="overflow:hidden">
-    <table><thead><tr><th>Vendor</th><th class="n">Stores</th><th class="n">Avg latency</th><th>Avg success (no handover)</th></tr></thead>
+    <table><thead><tr>
+      <th class="srt" onclick="sortSummary('vendor')">Vendor<span class="sc"></span></th>
+      <th class="n srt" onclick="sortSummary('stores')">Stores<span class="sc"></span></th>
+      <th class="n srt" onclick="sortSummary('lat')">Avg latency<span class="sc"></span></th>
+      <th class="srt" onclick="sortSummary('success')">Avg success (no handover)<span class="sc"></span></th>
+    </tr></thead>
       <tbody id="summary-body"></tbody></table>
   </div>
 </section>
@@ -124,7 +132,7 @@
   <div class="card" style="overflow:hidden">
     <table id="results">
       <thead><tr>
-        <th>Vendor / store</th><th class="hide-sm">Method</th><th class="n">Latency</th><th>Success (no handover)</th><th class="hide-sm">What happened</th>
+        <th class="srt" onclick="sortResults('store')">Vendor / store<span class="sc"></span></th><th class="hide-sm srt" onclick="sortResults('method')">Method<span class="sc"></span></th><th class="n srt" onclick="sortResults('lat')">Latency<span class="sc"></span></th><th class="srt" onclick="sortResults('success')">Success (no handover)<span class="sc"></span></th><th class="hide-sm">What happened</th>
       </tr></thead>
       <tbody id="results-body"></tbody>
     </table>
@@ -543,42 +551,58 @@ function sNum(s){
   return null;
 }
 function latNum(s){ const m=(s.lat||'').match(/[\d.]+/); return m?parseFloat(m[0]):null; }
+let SSORT={key:'lat',dir:1}, RSORT={key:'lat',dir:1};   // default: latency ascending (shortest first)
 function renderSummary(){
   const byV={};
   AS().forEach(s=>{ (byV[s.vendor]=byV[s.vendor]||[]).push(s); });
-  let html='';
-  Object.keys(byV).forEach(v=>{
+  let rows=Object.keys(byV).map(v=>{
     const arr=byV[v];
     const tested=arr.filter(s=>s.method==='new'||s.method==='legacy');
     const sN=arr.map(sNum).filter(x=>x!=null);
     const lN=arr.map(latNum).filter(x=>x!=null);
     const avgS = sN.length? Math.round(sN.reduce((a,b)=>a+b,0)/sN.length) : null;
     const avgL = lN.length? (Math.round(lN.reduce((a,b)=>a+b,0)/lN.length*10)/10) : null;
-    const cls = avgS==null?'p-na':avgS>=70?'p-ok':avgS>=40?'p-mid':'p-bad';
-    const pill = avgS==null?'<span class="pill p-na">pending</span>':'<span class="pill '+cls+'">'+avgS+'%</span>';
-    const bar = avgL!=null? '<div class="bar" style="display:inline-block;width:70px;vertical-align:middle"><i style="width:'+Math.min(100,avgL/20*100)+'%;background:'+(COL[v]||'#888')+'"></i></div> ':'';
-    html+='<tr><td><span class="vdot" style="background:'+(COL[v]||'#888')+'"></span><span class="vname">'+v+'</span>'+(arr[0].us?'<span class="us-tag">US</span>':'')+'</td>'+
-      '<td class="n mono">'+tested.length+'</td>'+
-      '<td class="n mono">'+bar+'<span style="font-weight:700">'+(avgL!=null?('~'+avgL+'s'):'—')+'</span></td>'+
-      '<td>'+pill+'</td></tr>';
+    return {v, us:arr[0].us, stores:tested.length, avgS, avgL};
   });
-  document.getElementById('summary-body').innerHTML=html;
+  const k=SSORT.key,d=SSORT.dir;
+  const key=r=> k==='vendor'?r.v.toLowerCase() : k==='stores'?r.stores : k==='success'?(r.avgS==null?-1:r.avgS) : (r.avgL==null?1e9:r.avgL);
+  rows.sort((a,b)=>{const ka=key(a),kb=key(b); return ka<kb?-d:ka>kb?d:0;});
+  document.getElementById('summary-body').innerHTML = rows.map(r=>{
+    const cls = r.avgS==null?'p-na':r.avgS>=70?'p-ok':r.avgS>=40?'p-mid':'p-bad';
+    const pill = r.avgS==null?'<span class="pill p-na">pending</span>':'<span class="pill '+cls+'">'+r.avgS+'%</span>';
+    const bar = r.avgL!=null? '<div class="bar" style="display:inline-block;width:70px;vertical-align:middle"><i style="width:'+Math.min(100,r.avgL/20*100)+'%;background:'+(COL[r.v]||'#888')+'"></i></div> ':'';
+    return '<tr><td><span class="vdot" style="background:'+(COL[r.v]||'#888')+'"></span><span class="vname">'+r.v+'</span>'+(r.us?'<span class="us-tag">US</span>':'')+'</td>'+
+      '<td class="n mono">'+r.stores+'</td>'+
+      '<td class="n mono">'+bar+'<span style="font-weight:700">'+(r.avgL!=null?('~'+r.avgL+'s'):'—')+'</span></td>'+
+      '<td>'+pill+'</td></tr>';
+  }).join('');
 }
 function renderResults(){
-  let html='', lastV=null;
-  AS().forEach(s=>{
-    if(s.vendor!==lastV){ html+='<tr class="grp-row" data-v="'+s.vendor+'"><td colspan="5">'+s.vendor+'</td></tr>'; lastV=s.vendor; }
+  const arr=[...AS()];
+  const k=RSORT.key,d=RSORT.dir;
+  const key=s=> k==='store'?(s.vendor+' '+s.store).toLowerCase() : k==='method'?(s.method||'') : k==='success'?(sNum(s)==null?-1:sNum(s)) : (latNum(s)==null?1e9:latNum(s));
+  arr.sort((a,b)=>{const ka=key(a),kb=key(b); return ka<kb?-d:ka>kb?d:0;});
+  document.getElementById('results-body').innerHTML = arr.map(s=>{
     const latBar = (typeof s.latPct==='number' && s.method!=='pending') ? '<div class="bar" style="display:inline-block;width:70px;vertical-align:middle"><i style="width:'+s.latPct+'%;background:'+(COL[s.vendor]||'#888')+'"></i></div> ' : '';
-    html+='<tr data-v="'+s.vendor+'" class="'+(s.method==='legacy'?'legacy':'')+'">'+
+    return '<tr data-v="'+s.vendor+'" class="'+(s.method==='legacy'?'legacy':'')+'">'+
       '<td>'+vcell(s)+'</td>'+
       '<td class="hide-sm">'+methodCell(s)+'</td>'+
       '<td class="n mono">'+latBar+'<span style="font-weight:700">'+(s.lat||'—')+'</span></td>'+
       '<td>'+pillFor(s)+'</td>'+
       '<td class="hide-sm note" style="font-size:12px">'+(s.what||'')+'</td>'+
       '</tr>';
-  });
-  document.getElementById('results-body').innerHTML=html;
+  }).join('');
 }
+function carets(){
+  document.querySelectorAll('th.srt').forEach(th=>{
+    const m=(th.getAttribute('onclick')||'').match(/sort(Results|Summary)\('(\w+)'\)/);
+    const sc=th.querySelector('.sc'); if(!m||!sc) return;
+    const st=m[1]==='Results'?RSORT:SSORT;
+    sc.textContent = (m[2]===st.key) ? (st.dir===1?'▲':'▼') : '';
+  });
+}
+function sortResults(k){ if(RSORT.key===k) RSORT.dir*=-1; else { RSORT.key=k; RSORT.dir=1; } renderResults(); carets(); }
+function sortSummary(k){ if(SSORT.key===k) SSORT.dir*=-1; else { SSORT.key=k; SSORT.dir=1; } renderSummary(); carets(); }
 function renderMatrix(){
   const sym = v => v===1?'<span class="y">●</span>':v===0?'<span class="n">●</span>':'<span class="p">●</span>';
   let html='';
@@ -635,7 +659,7 @@ function filterBy(v){
   });
 }
 function renderAll(){
-  renderSummary(); renderResults(); renderMatrix(); renderConv(); renderFilter();
+  renderSummary(); renderResults(); renderMatrix(); renderConv(); renderFilter(); carets();
   document.getElementById('caps-sec').style.display = (MODE==='shopping') ? '' : 'none';
   document.getElementById('mode-note').textContent = (MODE==='shopping')
     ? 'Shopping-discovery conversations that must end in a real product recommendation.'
