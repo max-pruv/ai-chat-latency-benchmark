@@ -74,6 +74,9 @@
   .note{font-size:12.5px;color:var(--on-muted);line-height:1.6}
   .callout{background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:14px 16px;font-size:13px;line-height:1.6;color:#7c2d12;margin-top:14px}
   .callout b{color:#9a3412}
+  .modebar{display:flex;gap:8px;justify-content:center;margin:-26px auto 14px;position:relative;z-index:3;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px;box-shadow:var(--e8);width:max-content}
+  .modebtn{font-size:14px;font-weight:700;padding:9px 20px;border-radius:999px;border:none;background:transparent;cursor:pointer;color:var(--on-muted)}
+  .modebtn[aria-selected="true"]{background:var(--on);color:#fff}
   .foot{text-align:center;font-size:12px;color:var(--on-faint);padding:30px}
   .foot a{color:var(--primary);text-decoration:none}
   @media(max-width:720px){.hide-sm{display:none}.hero h1{font-size:26px}}
@@ -96,6 +99,12 @@
 
 <div class="wrap">
 
+<div class="modebar">
+  <button class="modebtn" data-m="shopping" aria-selected="true" onclick="setMode('shopping')">🛍️ Shopping Assistant</button>
+  <button class="modebtn" data-m="support" aria-selected="false" onclick="setMode('support')">🎧 Support</button>
+</div>
+<p class="lead" id="mode-note" style="text-align:center;margin:0 auto 6px">Shopping-discovery conversations that must end in a real product recommendation.</p>
+
 <section>
   <h2 class="sec">Results — per store</h2>
   <p class="lead">Each row is one live store. <strong>Latency</strong> = time to a full answer. <strong>Success</strong> = % of the 10 turns the AI answered itself with no human handover. Stores marked <span class="pill p-na">legacy</span> were measured earlier on a single conversation and are pending a standardized re-test; their success figure reflects observed handover behavior, not a precise 10-turn rate.</p>
@@ -113,7 +122,7 @@
   </div>
 </section>
 
-<section>
+<section id="caps-sec">
   <h2 class="sec">Capabilities — what the assistant actually does</h2>
   <p class="lead">Beyond answering: does it use <strong>quick replies</strong> (suggested chips), render <strong>product cards</strong> ("pull cards" with price/links), surface <strong>reviews</strong>, and <strong>complete the sale</strong> itself? <span class="matrix"><span class="y">●</span> yes · <span class="n">●</span> no · <span class="p">●</span> not yet tested</span></p>
   <div class="card" style="overflow:hidden">
@@ -244,6 +253,72 @@ const STORES = [
    caps:{qr:2,cards:2,reviews:2,completes:2}, turns:[]},
 ];
 
+// ---- SUPPORT mode: same stores, support questions (shipping/returns/policy) ----
+const SUPPORT = [
+  {id:'gorgias-glamnetic-sup', vendor:'Gorgias', store:'Glamnetic', site:'glamnetic.com', url:'https://www.glamnetic.com', method:'new', us:true,
+   lat:'~19s', latPct:95, success:100, successTxt:'9/9',
+   what:'Answered every support question itself: returns (14-day, $8 fee, refund vs gift card), shipping/tracking, Canada customs & duties, discount-code fixes, cruelty-free/vegan. Order-specific cases gated behind account login. No spontaneous handover.',
+   turns:[
+    {q:"Placed an order days ago, still no tracking — how long to ship + send tracking?",a:"Ships within 48 business hours; tracking on dispatch; US standard 3–7 business days; flag if no confirmation within 5 business days.",by:'ai'},
+    {q:"Return policy — can I return opened press-on nails?",a:"14 days, original condition + packaging only; opened/used not eligible. Refund (−$8 return shipping) or gift card (no fee); refunds in 3–5 business days.",by:'ai'},
+    {q:"A couple of nails arrived broken — what do you do?",a:"Damaged-item issue (not a standard return); asks to log in to look up the order for next steps.",by:'ai'},
+    {q:"Change the shipping address on an order placed this morning?",a:"Possible if not yet shipped; needs login to check + update if eligible.",by:'ai'},
+    {q:"Cancel an order shortly after placing? Cancellation window?",a:"Processed in 24–48h; cancellation only before fulfilment; login to check.",by:'ai'},
+    {q:"Ship to Canada? Who covers customs/duties?",a:"Ships to Canada (8–14 business days); customs/duties paid by customer; possible 25% tariff on certain US-origin products + ~5–15% duty over $150 CAD; free standard shipping over $65 USD.",by:'ai'},
+    {q:"Discount code won't apply at checkout — reasons + fix?",a:"Expired / excluded items / minimum not met / another promo applied; enter exactly, remove other codes; offers to check the specific code + cart.",by:'ai'},
+    {q:"Cruelty-free and vegan? I have sensitive skin.",a:"Cruelty-free (nails + lashes); press-on nails vegan; nail tabs gentler than glue (ethyl cyanoacrylate + PMMA).",by:'ai'},
+    {q:"Tracking says delivered but never arrived — refund or replacement?",a:"Empathetic; defers to login/order lookup to decide replacement vs refund.",by:'ai'}
+   ]},
+  {id:'sierra-casper-sup', vendor:'Sierra', store:'Casper', site:'casper.com', url:'https://casper.com', method:'legacy', us:false,
+   lat:'~6.5s', latPct:33, success:'✓', successTxt:'completed', successCls:'p-ok',
+   what:'Specific, complete shipping + 100-night trial/returns + financing answers; no handover.',
+   turns:[
+    {q:"Do you offer free shipping?",a:"Free shipping on most products (contiguous US); adjustable bases $50, frames/headboards $25; return shipping always free; in-home setup $249.",by:'ai'},
+    {q:"What is your trial period and return policy?",a:"100-night trial; free, easy returns if not 100% in love after the first 30 nights. Furniture 30-night (100 with a mattress).",by:'ai'},
+    {q:"Do you offer financing or payment plans?",a:"Yes — financing/payment plans via Affirm, Katapult and others at checkout.",by:'ai'},
+    {q:"How long does delivery take once I order?",a:"Most in-stock products delivered within 2–8 business days after the order ships.",by:'ai'}
+   ]},
+  {id:'meta-dermalogica-sup', vendor:'Meta AI', store:'Dermalogica', site:'dermalogica.com', url:'https://www.dermalogica.com', method:'legacy', us:false,
+   lat:'~5s', latPct:25, success:'~', successTxt:'partial', successCls:'p-mid',
+   what:'Clear returns policy, but vague boilerplate shipping (no threshold/method). Answered without handover in support.',
+   turns:[
+    {q:"Do you offer free shipping?",a:"\"Yes, we offer free shipping as one of our shipping options.\" (Vague — no threshold or method.)",by:'ai'},
+    {q:"What is your return policy?",a:"Returns within 30 days; new or gently used in original packaging; no return shipping, handling, or restocking fees.",by:'ai'}
+   ]},
+  {id:'siena-simplemodern-sup', vendor:'Siena', store:'Simple Modern', site:'simplemodern.com', url:'https://www.simplemodern.com', method:'legacy', us:false,
+   lat:'~9.5s', latPct:48, success:'~', successTxt:'partial', successCls:'p-mid',
+   what:'Great shipping specificity, but a soft handover on returns ("share your email/order number") instead of stating the policy.',
+   turns:[
+    {q:"Do you offer free shipping on orders?",a:"Free standard shipping over $30 (contiguous 48); under $30 is $4.99; most orders arrive in 5–11 business days.",by:'ai'},
+    {q:"How long does standard shipping usually take?",a:"5–11 business days total: 1–3 to fulfil + 4–8 to ship.",by:'ai'},
+    {q:"Can I return it if I don't like the color?",a:"\"You may be able to — it depends on your order. Could you share your email or order number so the team can confirm?\" (soft handover instead of the policy.)",by:'human'}
+   ]},
+  {id:'dg-bloomwild-sup', vendor:'DigitalGenius', store:'Bloom & Wild', site:'bloomandwild.com', url:'https://www.bloomandwild.com', method:'legacy', us:false,
+   lat:'~10.2s', latPct:51, success:'✓', successTxt:'completed', successCls:'p-ok',
+   what:'Specific next-day / delivery-cost / tracking answers; no handover in support (the handover was on the SHOPPING rec).',
+   turns:[
+    {q:"Do you deliver next day in the UK?",a:"Yes, next-day across most of the UK; order by 10pm (central) / 5:30pm (peripheral).",by:'ai'},
+    {q:"How much does delivery cost?",a:"Royal Mail free; DPD All-day £5 Mon–Fri / £6 weekend; DPD Morning £6 / £10 Sat; XEROE (London) free; Ireland free Tue–Fri.",by:'ai'},
+    {q:"How do I track my order?",a:"Your order number is in your confirmation email or on your account.",by:'ai'},
+    {q:"Do you offer same-day delivery?",a:"No same-day in any market; the earliest option is next-day before the cut-off.",by:'ai'}
+   ]},
+  {id:'yuma-evryjewels-sup', vendor:'Yuma', store:'EvryJewels', site:'evryjewels.com', url:'https://evryjewels.com', method:'legacy', us:false,
+   lat:'~13.5s', latPct:68, success:'✓', successTxt:'completed', successCls:'p-ok',
+   what:'Clear shipping + blunt no-returns policy; no handover.',
+   turns:[
+    {q:"Do you offer free shipping?",a:"Free shipping when subtotal ≥ $35 (after discounts, before taxes); Package Protection + 1-Year Warranty add-ons excluded.",by:'ai'},
+    {q:"Is the gold real gold or gold plated?",a:"18K gold plating — waterproof and skin-safe (nickel-free, lead-free), made for daily wear.",by:'ai'},
+    {q:"How long does shipping take to the US?",a:"Provides the US fulfilment + transit window.",by:'ai'},
+    {q:"What is your return policy?",a:"No refunds, exchanges, or returns (per the refund-policy page). Asks why you're requesting a return.",by:'ai'}
+   ]},
+  {id:'ada-loop-sup', vendor:'Ada', store:'Loop Earplugs', site:'loopearplugs.com', url:'https://www.loopearplugs.com', method:'down', us:false,
+   lat:'down', latPct:0, success:null, successTxt:'backend down', successCls:'p-na',
+   what:'Ada bot backend was unavailable on the test days.', turns:[]}
+];
+
+let MODE='shopping';
+function AS(){ return MODE==='shopping' ? STORES : SUPPORT; }
+
 function pillFor(s){
   if(s.success===100) return '<span class="pill p-ok">100% · '+s.successTxt+'</span>';
   if(typeof s.success==='number'){ const cls = s.success>=70?'p-ok':s.success>=40?'p-mid':'p-bad'; return '<span class="pill '+cls+'">'+s.success+'% · '+s.successTxt+'</span>'; }
@@ -259,10 +334,10 @@ function methodCell(s){
   if(s.method==='down') return '<span class="pill p-na">down</span>';
   return '<span class="pill p-na">pending</span>';
 }
-// results table grouped by vendor
-(function(){
+// ---- mode-aware rendering ----
+function renderResults(){
   let html='', lastV=null;
-  STORES.forEach(s=>{
+  AS().forEach(s=>{
     if(s.vendor!==lastV){ html+='<tr class="grp-row" data-v="'+s.vendor+'"><td colspan="5">'+s.vendor+'</td></tr>'; lastV=s.vendor; }
     const latBar = (typeof s.latPct==='number' && s.method!=='pending') ? '<div class="bar" style="display:inline-block;width:70px;vertical-align:middle"><i style="width:'+s.latPct+'%;background:'+(COL[s.vendor]||'#888')+'"></i></div> ' : '';
     html+='<tr data-v="'+s.vendor+'" class="'+(s.method==='legacy'?'legacy':'')+'">'+
@@ -274,21 +349,19 @@ function methodCell(s){
       '</tr>';
   });
   document.getElementById('results-body').innerHTML=html;
-})();
-// capability matrix
-(function(){
+}
+function renderMatrix(){
   const sym = v => v===1?'<span class="y">●</span>':v===0?'<span class="n">●</span>':'<span class="p">●</span>';
   let html='';
-  STORES.filter(s=>s.method==='new'||s.method==='legacy').forEach(s=>{
+  AS().filter(s=>(s.method==='new'||s.method==='legacy') && s.caps).forEach(s=>{
     html+='<tr data-v="'+s.vendor+'"><td><span class="vdot" style="background:'+(COL[s.vendor]||'#888')+'"></span>'+s.store+' <span class="site">'+s.vendor+'</span></td>'+
       '<td>'+sym(s.caps.qr)+'</td><td>'+sym(s.caps.cards)+'</td><td>'+sym(s.caps.reviews)+'</td><td>'+sym(s.caps.completes)+'</td></tr>';
   });
   document.getElementById('matrix-body').innerHTML=html;
-})();
-// conversation drill-down
-const CONV = STORES.filter(s=>s.turns && s.turns.length);
+}
+function CONVS(){ return AS().filter(s=>s.turns && s.turns.length); }
 function showConv(id){
-  const s = CONV.find(x=>x.id===id);
+  const s = CONVS().find(x=>x.id===id); if(!s) return;
   document.querySelectorAll('#conv-tabs .tab').forEach(t=>t.setAttribute('aria-selected', t.dataset.id===id));
   document.getElementById('conv-head').innerHTML =
     '<span class="vdot" style="background:'+(COL[s.vendor]||'#888')+'"></span><span class="lbl">'+s.store+'</span>'+
@@ -301,23 +374,37 @@ function showConv(id){
       '<div class="msg"><div class="av '+(human?'h':'b')+'">'+(human?'H':'AI')+'</div><div class="mt">'+t.a+'</div></div></div>';
   }).join('');
 }
-(function(){
+function renderConv(){
+  const CONV = CONVS();
   document.getElementById('conv-tabs').innerHTML = CONV.map((s,i)=>'<button class="tab" data-id="'+s.id+'" aria-selected="'+(i===0)+'" onclick="showConv(\''+s.id+'\')">'+s.store+' · '+s.vendor+(s.us?' (us)':'')+'</button>').join('');
-  if(CONV.length) showConv(CONV[0].id);
-})();
-// per-store / per-vendor filter for the results table + capability matrix
-(function(){
-  const vendors = [...new Set(STORES.map(s=>s.vendor))];
+  if(CONV.length){ showConv(CONV[0].id); }
+  else { document.getElementById('conv-head').innerHTML=''; document.getElementById('conv-body').innerHTML='<div class="note">No recorded conversation for this mode yet.</div>'; }
+}
+function renderFilter(){
+  const vendors = [...new Set(AS().map(s=>s.vendor))];
   document.getElementById('store-filter').innerHTML =
     '<button class="tab" data-v="__all" aria-selected="true" onclick="filterBy(\'__all\')">All stores</button>'+
     vendors.map(v=>'<button class="tab" data-v="'+v+'" aria-selected="false" onclick="filterBy(\''+v.replace(/'/g,"\\'")+'\')"><span class="vdot" style="background:'+(COL[v]||'#888')+'"></span>'+v+'</button>').join('');
-})();
+}
 function filterBy(v){
   document.querySelectorAll('#store-filter .tab').forEach(b=>b.setAttribute('aria-selected', b.dataset.v===v));
   document.querySelectorAll('#results-body tr, #matrix-body tr').forEach(tr=>{
     tr.style.display = (v==='__all' || tr.dataset.v===v) ? '' : 'none';
   });
 }
+function renderAll(){
+  renderResults(); renderMatrix(); renderConv(); renderFilter();
+  document.getElementById('caps-sec').style.display = (MODE==='shopping') ? '' : 'none';
+  document.getElementById('mode-note').textContent = (MODE==='shopping')
+    ? 'Shopping-discovery conversations that must end in a real product recommendation.'
+    : 'Support conversations — shipping, delivery, returns & policy. Success = answered without a spontaneous human handover.';
+}
+function setMode(m){
+  MODE=m;
+  document.querySelectorAll('.modebtn').forEach(b=>b.setAttribute('aria-selected', b.dataset.m===m));
+  renderAll();
+}
+renderAll();
 </script>
 </body>
 </html>
