@@ -1,0 +1,20 @@
+{
+  "method": "Blind LLM-as-judge panel. Vendors anonymized as Store A–F (judges did not know which brand was which, including Gorgias). 3 independent judges scored each store's recorded answers on a 1–5 rubric (0 = did not answer / escalated / timed out) across FAQ, Policy/returns, and Product-recommendation, plus an overall. Scores below are the mean of the 3 judges.",
+  "rubric": "Directness (did it answer?), specificity/accuracy, helpfulness/actionability (links, options, next steps), commerce effectiveness (moves the shopper toward a confident purchase).",
+  "anonymization_map": {"A": "Yuma (EvryJewels)", "B": "Gorgias (NouriVida)", "C": "Sierra (Casper)", "D": "Meta AI (Dermalogica)", "E": "Siena (Simple Modern)", "F": "DigitalGenius (Bloom & Wild)"},
+  "scores": [
+    {"vendor": "Sierra", "client": "Casper", "faq": 5.0, "policy": 5.0, "product_rec": 5.0, "overall": 5.0, "note": "Specific and complete on every axis; real recommendation with interactive add-to-cart cards."},
+    {"vendor": "Gorgias", "client": "NouriVida (us)", "faq": 5.0, "policy": 2.7, "product_rec": 5.0, "overall": 4.0, "note": "Best-in-class product rec (card + link + discount code + CTA) and precise shipping, but the returns answer was thin and immediately pivoted to an upsell instead of explaining the policy."},
+    {"vendor": "Yuma", "client": "EvryJewels", "faq": 5.0, "policy": 3.7, "product_rec": 2.7, "overall": 3.3, "note": "Precise shipping and a clear (if blunt) no-returns policy, but the recommendation only gestured at collections rather than naming a specific item with a buy path; a separate question also timed out."},
+    {"vendor": "Siena", "client": "Simple Modern", "faq": 5.0, "policy": 1.7, "product_rec": 1.0, "overall": 2.7, "note": "Excellent shipping specificity, but it deflects returns to 'share your email' and defers product questions to product pages rather than confidently recommending."},
+    {"vendor": "Meta AI", "client": "Dermalogica", "faq": 2.0, "policy": 5.0, "product_rec": 0.0, "overall": 2.0, "note": "Clear, complete returns policy, but vague boilerplate shipping answer and it escalated the product question to a human lead-capture form (no recommendation)."},
+    {"vendor": "DigitalGenius", "client": "Bloom & Wild", "faq": 4.3, "policy": null, "product_rec": 0.0, "overall": 2.0, "note": "Good, specific next-day delivery answer, but the product question was escalated to an unavailable human (no recommendation); returns not tested."},
+    {"vendor": "Ada", "client": "Loop Earplugs", "faq": null, "policy": null, "product_rec": null, "overall": null, "note": "Not evaluated — bot backend was down on both test days."}
+  ],
+  "key_findings": [
+    "Speed and quality do not correlate. The fastest FAQ responder (Meta AI, ~5s) scored lowest on quality (2.0) because it doesn't recommend; the highest-quality vendor (Sierra, 5.0) is also the fastest that actually does product recs.",
+    "Only Sierra, Gorgias, Yuma and Siena attempt product recommendations; Meta AI and DigitalGenius escalate to a human (product_rec = 0).",
+    "Gorgias (us) has the strongest product-recommendation quality (tied with Sierra at 5.0) but the weakest returns/policy answer of the rec-capable vendors (2.7) — it gave a thin returns reply and jumped to an upsell. Clear area to improve.",
+    "Judge agreement was high (e.g., Sierra 5/5/5, Gorgias 4/4/4 on overall), so the ranking is stable."
+  ]
+}
