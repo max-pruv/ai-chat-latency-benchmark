@@ -63,6 +63,9 @@
   .lead{font-size:14px;color:var(--on-muted);max-width:790px;line-height:1.62;margin-bottom:18px}
   .card{background:var(--surface);border:1px solid var(--glass-border);border-radius:var(--r);box-shadow:var(--e8);backdrop-filter:var(--glass);-webkit-backdrop-filter:var(--glass)}
   table{width:100%;border-collapse:collapse;font-size:13.5px}
+  /* scrollable tables: cap height, keep the header pinned */
+  .table-scroll{max-height:520px;overflow:auto}
+  .table-scroll thead th{position:sticky;top:0;z-index:3;background:var(--surface-solid)}
   thead th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--on-faint);padding:12px 14px;border-bottom:1px solid var(--line)}
   th.srt{cursor:pointer;user-select:none}
   th.srt:hover{color:var(--on-muted)}
@@ -272,7 +275,7 @@
 <section id="summary-sec">
   <h2 class="sec">Summary — by vendor</h2>
   <p class="lead">One line per vendor, <strong>averaged across the stores tested in this mode</strong>. Drill into individual stores in the table below. (Legacy single-store success is mapped to a proxy: completed = 100%, partial = 50%, handover = 0%.)</p>
-  <div class="card" style="overflow:hidden">
+  <div class="card table-scroll">
     <table><thead><tr>
       <th class="srt" onclick="sortSummary('vendor')">Vendor<span class="sc"></span></th>
       <th class="n srt" onclick="sortSummary('stores')">Stores<span class="sc"></span></th>
@@ -308,7 +311,7 @@
   <h2 class="sec">Results — per store</h2>
   <p class="lead">Each row is one live store. <strong>Latency</strong> = time to a full answer. <strong>Success</strong> = % of the 10 turns the AI answered itself with no human handover. Stores marked <span class="pill p-na">legacy</span> were measured earlier on a single conversation and are pending a standardized re-test; their success figure reflects observed handover behavior, not a precise 10-turn rate.</p>
   <div class="toggle-tabs" id="store-filter"></div>
-  <div class="card" style="overflow:hidden">
+  <div class="card table-scroll">
     <table id="results">
       <thead><tr>
         <th class="srt" onclick="sortResults('store')">Vendor / store<span class="sc"></span></th><th class="hide-sm srt" onclick="sortResults('method')">Method<span class="sc"></span></th><th class="n srt" onclick="sortResults('lat')">Latency<span class="sc"></span></th><th class="srt" onclick="sortResults('success')">Success (no handover)<span class="sc"></span></th><th class="n srt qcol qcol-h" onclick="sortResults('qual')">Relevance quality<span class="sc"></span></th><th class="n srt" onclick="sortResults('turns')">Turns<span class="sc"></span></th><th class="hide-sm">What happened</th>
@@ -324,7 +327,7 @@
 <section id="caps-sec">
   <h2 class="sec">Capabilities — what the assistant actually does</h2>
   <p class="lead">Beyond answering: does it use <strong>quick replies</strong> (suggested chips), render <strong>product cards</strong> ("pull cards" with price/links), surface <strong>reviews</strong>, and <strong>complete the sale</strong> itself? <span class="matrix"><span class="y">●</span> yes · <span class="n">●</span> no · <span class="p">●</span> not yet tested</span></p>
-  <div class="card" style="overflow:hidden">
+  <div class="card table-scroll">
     <table class="matrix"><thead><tr>
       <th>Vendor</th><th>Quick replies</th><th>Product cards</th><th>Reviews</th><th>Completes sale (no handoff)</th><th class="n">Score</th>
     </tr></thead><tbody id="matrix-body"></tbody></table>
