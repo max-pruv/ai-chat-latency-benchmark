@@ -32,11 +32,16 @@ The report is a **static snapshot** (baked data, no auto-refresh). Each run **ad
 
 ## How it works
 
+- **Two clean lanes.** The Shopping Assistant lane is *pre-sales only* (product discovery → recommendation → add-to-cart). The Support lane is *post-purchase only* (tracking, returns, damaged item, order changes, shipping/returns/payment policy). The two never mix — the support themes contain no discount/promo/loyalty questions, so there's no ambiguity between support and pre-sales.
 - Each assistant is driven on its **live customer site** in a **fresh, cold browser context** per conversation (private/incognito-equivalent — no warm session state).
-- We run **5 standardized Shopping themes + 5 Support themes** per store (everyday-value, gift, problem-solver, compare-budget, beginner / tracking, returns, damaged, order-mgmt, policy), each a **single continuous ~7-turn conversation** (consecutive turns in the *same* session, not a new chat per turn), adapted to each catalog so it's apples-to-apples.
+- We run **5 standardized themes per lane** per store, each a **single continuous ~7-turn conversation** (consecutive turns in the *same* session), adapted to each catalog so it's apples-to-apples.
 - **Latency is timed to the true final answer.** Typing indicators and stall/ack messages ("one moment, let me check…") are skipped so a two-part reply can't fake a fast number. Human replies are never timed.
 - We **never click quick-reply chips** — always free-typed text — because canned chips can trigger cached responses and distort latency.
-- We **never request a human**; any handover is therefore unprompted and counts against success.
+- We **never request a human**; any handover is unprompted, **stops the conversation** (we don't keep scripting a live agent), and counts against success.
+
+### Data integrity — the validity gate
+
+A conversation is only admitted to the report if it is a **real data point**: it either hit a genuine handover, or produced **≥3 cleanly-timed AI answers**. Anything else — a chip/menu-only widget, an offline/"leave a message" state, or a pure timeout with no measurable answer — is marked **invalid and excluded** (never shown as a latency-less conversation). This logic lives in [`runner/classify.js`](runner/classify.js) as pure functions and is covered by unit tests ([`runner/classify.test.js`](runner/classify.test.js), `node --test`), including the regression guards: a bot's own "AI says:" / "Virtual Assistant says:" is *not* a handover, a named human ("Sarah says:") *is*, and offline/menu text never counts as an answer.
 
 ### Quality scoring
 
@@ -134,7 +139,13 @@ node run.js --mode shopping
 cd runner && caffeinate -i bash run-benchmark.sh headed   # real Chrome, resumable, residential IP
 ```
 
-Runner writes one JSON per conversation the instant it finishes (resumable at the theme level), then `gen.js` aggregates on read and injects `STORES`/`SUPPORT` into `report.html`.
+Runner writes one JSON per conversation the instant it finishes (resumable at the theme level), then `gen.js` aggregates on read and injects `STORES`/`SUPPORT` into `report.html`. Invalid/no-latency captures are re-tried on the next run, never treated as done.
+
+**Unit tests:**
+
+```bash
+cd runner && node --test        # classify.test.js — validity gate, handover & typing/stall detection
+```
 
 ## Deploy
 
