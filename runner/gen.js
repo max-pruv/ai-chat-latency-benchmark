@@ -84,6 +84,7 @@ function cleanReply(s) {
   return t;
 }
 function aText(turn) {
+  if (turn.unsent) return "⏹ not sent — conversation was handed to a human";
   if (turn.by === "human") return "🚩 human took over";
   if (turn.complete_ms == null) {
     const tail = cleanReply(turn.replyTail);

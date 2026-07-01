@@ -236,6 +236,18 @@ async function runStoreMode(browser, store, mode, theme) {
     const useNet = w.transport === "net" && w.net;
     for (let i = 0; i < pool.length; i++) {
       const q = pool[i];
+      // Handed to a human on an earlier turn → STOP talking to the human. We do NOT
+      // keep sending scripted shopper messages to a live agent. The remaining turns
+      // are recorded as "not sent" (by:human) so the full-journey denominator — and
+      // therefore the success rate — is preserved (a bail-out at T3 of 7 stays 2/7,
+      // it doesn't get flattered to 2/3).
+      if (handedOver) {
+        out.turns.push({ turn: i + 1, q, by: "human", ttft_ms: null, complete_ms: null,
+          ai_latency_ms: null, handover: false, handover_hit: null, unsent: true,
+          replyTail: "(not sent — conversation was handed to a human)" });
+        console.log(`  [${store.key}/${mode}/${theme.key}] T${i + 1} (not sent — handed to human)`);
+        continue;
+      }
       let r, tail;
       if (useNet) {
         try { r = await timeTurnNet(page, net, () => w.send(page, q)); }
