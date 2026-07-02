@@ -235,7 +235,9 @@ async function runStoreMode(browser, store, mode, theme) {
         catch (e) { r = { ttft_ms: null, complete_ms: null, error: String(e).slice(0, 120) }; }
         tail = (await readTranscript(page, w.scope)).text.slice(-700);
       }
-      const handover = detectHandover(tail, w.handover);
+      // Pass the store/vendor name so the bot's own brand label ("Tediber says:") isn't
+      // misread as a human agent named "Tediber".
+      const handover = detectHandover(tail, w.handover, [store.store, store.vendor]);
       if (handover) handedOver = true;
       // Once a human owns the thread, every later turn is human too. We NEVER
       // count a human reply's latency — only the AI's own responses are timed.

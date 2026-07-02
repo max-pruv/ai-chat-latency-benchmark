@@ -13,8 +13,8 @@ export const ACK_RE = /(let me (check|look|see|find|pull|grab|dig|confirm)|one m
 export const NOANSWER_RE = /(you'?re offline|reconnecting|leave a message|leave us a message|start a conversation|choose (an|a) (option|topic)|select an option|main menu)\s*[.!…]*\s*$/i;
 
 // Unprompted handover to a HUMAN = the assistant bailed (a failure we measure).
-// A named human agent shows as "Sébastien says:"; exclude bot self-labels
-// ("AI says:", "Virtual Assistant says:") so a Zendesk/VA reply isn't misread as handover.
+// Explicit phrases only — the fragile "<Name> says:" heuristic lives in namedHumanSays()
+// below so it can exclude bot self-labels AND the widget's own brand/persona name.
 export const HANDOVER_PATTERNS = [
   /\bconnect you (with|to)\b/i, /\bi('|’)?ll connect you\b/i,
   /\btransfer(ring)? you (to|over)\b/i, /\btransf[eè]re(r|z)?\b.*(humain|conseiller|agent|ticket|demande)/i,
@@ -25,20 +25,40 @@ export const HANDOVER_PATTERNS = [
   /\b(fill (in|out)|complete) (the|this|a) form\b/i, /\benter your details\b/i,
   /\bshare (your|a few) (details|email|order number)\b.*(team|agent|connect|assist|follow)/i,
   /\b(joined|entered) the (chat|conversation)\b/i, /\ba rejoint (la )?(conversation|discussion|chat)\b/i,
-  /\b(?!(?:ai|assistant|bot|chatbot|concierge|virtual)\b)\w+ (says|dit)\s*:/i,
   /\blaissez(\-| )?(nous|moi)?\s*(votre)?\s*(e-?mail|adresse)/i,
   /\b(leave|enter) (your|us) (e-?mail|email address)\b/i,
   /\ball of our agents are (unavailable|busy)\b/i,
 ];
 
+// Generic bot/persona self-labels — never a human agent.
+const BOT_LABEL = /^(ai|assistant|bot|chatbot|concierge|virtual|team|support|help|helpdesk|chat|customer service|service client|[eé]quipe|nous)$/i;
+
+// A NAMED human agent joining shows as "Sébastien says:". This is deliberately narrow:
+// it excludes generic bot labels ("AI says:", "Assistant says:") AND the widget's own
+// brand/persona name passed in `selfNames` — because many bots label themselves with the
+// brand ("Tediber says:", "Dermalogica's Virtual Assistant says:"). Without this, a normal
+// bot greeting is misread as a human handover and the conversation is wrongly killed.
+export function namedHumanSays(text, selfNames = []) {
+  if (!text) return null;
+  const self = new Set((selfNames || []).flatMap(n => String(n || "").toLowerCase().split(/[^a-zà-ÿ0-9]+/i).filter(Boolean)));
+  const re = /\b([A-Za-zÀ-ÿ][A-Za-zÀ-ÿ'’-]*) (says|dit)\s*:/gi;
+  let m;
+  while ((m = re.exec(text))) {
+    const name = m[1].toLowerCase();
+    if (BOT_LABEL.test(name) || self.has(name)) continue;
+    return m[0].trim().slice(0, 80);
+  }
+  return null;
+}
+
 export const isGen = (t) => GEN_RE.test((t || "").trim());
 export const isAck = (t) => ACK_RE.test((t || "").trim());
 export const isNoAnswer = (t) => NOANSWER_RE.test((t || "").trim());
 
-export function detectHandover(text, extra = []) {
+export function detectHandover(text, extra = [], selfNames = []) {
   if (!text) return null;
   for (const re of [...HANDOVER_PATTERNS, ...extra]) { const m = text.match(re); if (m) return m[0].trim().slice(0, 80); }
-  return null;
+  return namedHumanSays(text, selfNames);
 }
 
 // A conversation is a VALID data point iff it produced enough cleanly-timed AI answers.

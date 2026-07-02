@@ -49,6 +49,12 @@ test("detectHandover: a normal AI answer is not a handover", () => {
   assert.equal(detectHandover("Our best-seller is the Daily Microfoliant — great for beginners."), null);
 });
 
+test("detectHandover: a BRAND-named bot ('Tediber says:') is NOT a handover when the brand is passed", () => {
+  const tail = "Tediber says: En quoi pouvons-nous vous aider ? Suivre la commande, Annuler la commande";
+  assert.equal(detectHandover(tail, [], ["Tediber", "Yuma"]), null);   // brand self-label
+  assert.ok(detectHandover("Sophie says: I can help with that", [], ["Tediber", "Yuma"])); // real human still caught
+});
+
 // ---- conversation validity gate --------------------------------------------
 const aiTurn = (ms) => ({ by: "ai", complete_ms: ms, handover: false });
 

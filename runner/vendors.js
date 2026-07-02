@@ -89,7 +89,7 @@ export const WIDGETS = {
   // Gorgias Chat — same-origin chat-window iframe; programmatic open + sendMessage.
   gorgias: {
     scope: { kind: "frame", match: "chat-window" },
-    handover: [/joined the chat/i, /a rejoint (la )?(conversation|discussion|chat)/i, /\b(?!(?:ai|assistant|bot|chatbot|concierge|virtual)\b)\w+ (says|dit)\s*:/i,
+    handover: [/joined the chat/i, /a rejoint (la )?(conversation|discussion|chat)/i,
                /conseiller humain/i, /transf[eè]re(r|z)?\b.*(humain|conseiller|agent|ticket)/i, /laissez(\-| )?(nous|moi)?\s*(votre)?\s*(e-?mail|adresse)/i],
     async open(page) {
       await dismiss(page);
