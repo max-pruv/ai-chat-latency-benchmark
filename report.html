@@ -9759,10 +9759,18 @@ function qCell(v){
 // ---- Date / sample window ----------------------------------------------------
 // Each conversation is stamped with its run date. Runs ACCUMULATE: every new run
 // adds dated conversations and keeps the old ones. The picker narrows the sample.
-const ALL_DATES = [...new Set([...STORES,...SUPPORT].map(s=>s.date).filter(Boolean))].sort();
+// The date dimension is the LOCAL calendar date each conversation was CAPTURED (its
+// datetime) — matching the time shown in the feed — NOT the storage/run-folder date. So
+// filtering a day shows exactly the conversations captured that day.
+const _pz = n => String(n).padStart(2,'0');
+const localDate = s => { if(!s) return null; const d=new Date(s); return isNaN(d) ? (''+s).slice(0,10) : d.getFullYear()+'-'+_pz(d.getMonth()+1)+'-'+_pz(d.getDate()); };
+function convDate(s, th){ return localDate((th && th.datetime) || (s&&s.datetime) || (s&&s.date ? s.date+'T12:00:00' : null)); }
+const ALL_DATES = [...new Set([...STORES,...SUPPORT].flatMap(s => (s.themes&&s.themes.length ? s.themes.map(t=>convDate(s,t)) : [convDate(s,null)])).filter(Boolean))].sort();
 let DATE_FROM=null, DATE_TO=null;                      // null = all runs
 function inRange(d){ if(!d) return true; if(DATE_FROM && d<DATE_FROM) return false; if(DATE_TO && d>DATE_TO) return false; return true; }
-function AS(){ const a = (MODE==='shopping' ? STORES : SUPPORT).filter(s=>inRange(s.date)); return [...a].sort((x,y)=>((y.us?1:0)-(x.us?1:0)) || (x.vendor<y.vendor?-1:x.vendor>y.vendor?1:0)); }
+// A store is "in window" if ANY of its conversations were captured in the window.
+function storeInRange(s){ const t=(s.themes&&s.themes.length)?s.themes:null; return t ? t.some(x=>inRange(convDate(s,x))) : inRange(convDate(s,null)); }
+function AS(){ const a = (MODE==='shopping' ? STORES : SUPPORT).filter(storeInRange); return [...a].sort((x,y)=>((y.us?1:0)-(x.us?1:0)) || (x.vendor<y.vendor?-1:x.vendor>y.vendor?1:0)); }
 // ---- Single range date picker (one popover calendar, pick start + end) -------
 const DSET = new Set(ALL_DATES);
 const pad = n => String(n).padStart(2,'0');
@@ -9805,7 +9813,9 @@ function pickDay(s){
 function presetDays(n){ const t=new Date(); DATE_TO=iso(t); DATE_FROM=iso(addDays(t,-(n-1))); SEL_START=null; applyRange(); closeCal(); }
 function presetAll(){ DATE_FROM=DATE_TO=null; SEL_START=null; applyRange(); closeCal(); }
 function initDates(){
-  const t=new Date(); DATE_TO=iso(t); DATE_FROM=iso(addDays(t,-29));   // default: last 30 days
+  const today=iso(new Date()); const latest=ALL_DATES[ALL_DATES.length-1]||today;
+  DATE_TO = today>latest ? today : latest;             // always cover the newest capture
+  DATE_FROM=iso(addDays(parse(DATE_TO),-29));           // default: last 30 days
   dpLabel(); dateNote();
   document.addEventListener('click', ()=>closeCal());
 }
@@ -10002,6 +10012,7 @@ function renderConv(){
       : [{label:'conversation', turns:s.turns, lat:s.lat, success:s.success, successTxt:s.successTxt, handoverTurn:null, datetime:s.datetime}];
     list.forEach(th=>{
       if(!(th.turns&&th.turns.length)) return;
+      if(!inRange(convDate(s,th))) return;   // per-conversation date filter (by capture date)
       CF_ITEMS.push({ vendor:s.vendor, store:s.store, us:s.us, label:th.label||'conversation',
         datetime: th.datetime||s.datetime||null, lat:th.lat, success:th.success,
         successTxt:th.successTxt, handoverTurn:th.handoverTurn, turns:th.turns });
@@ -10147,12 +10158,16 @@ function saveState(){ try{ localStorage.setItem('sb.v1', JSON.stringify({view:VI
 function loadState(){ try{ const s=JSON.parse(localStorage.getItem('sb.v1')||'null'); if(!s) return null; if(s.mode) MODE=s.mode; VIEW = s.view || s.mode || 'shopping'; if(s.ss) SSORT=s.ss; if(s.rs) RSORT=s.rs; return s; }catch(e){ return null; } }
 const _saved = loadState();
 document.querySelectorAll('.modebtn[data-m]').forEach(b=>b.setAttribute('aria-selected', b.dataset.m===VIEW));
-if (_saved && ('from' in _saved)) { DATE_FROM=_saved.from||null; DATE_TO=_saved.to||null; dpLabel(); dateNote(); document.addEventListener('click', ()=>closeCal()); }
-else { initDates(); }
+// Restore a saved window ONLY if it still covers the newest capture; a stale end-date
+// (from a previous day) would silently hide new conversations, so fall back to the default.
+const _latestDate = ALL_DATES[ALL_DATES.length-1] || null;
+if (_saved && ('from' in _saved) && (!_saved.to || !_latestDate || _saved.to >= _latestDate)) {
+  DATE_FROM=_saved.from||null; DATE_TO=_saved.to||null; dpLabel(); dateNote(); document.addEventListener('click', ()=>closeCal());
+} else { initDates(); }
 renderAll();
 // --- Static snapshot: stamp the badge with the latest capture date (no auto-reload) ---
 (function(){
-  const all=[...STORES,...SUPPORT].map(s=>s.date).filter(Boolean).sort();
+  const all=[...STORES,...SUPPORT].flatMap(s=>(s.themes&&s.themes.length?s.themes.map(t=>convDate(s,t)):[convDate(s,null)])).filter(Boolean).sort();
   const b=document.getElementById('live-badge');
   if(b && all.length) b.textContent='snapshot · data through '+all[all.length-1];
 })();
