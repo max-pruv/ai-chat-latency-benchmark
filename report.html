@@ -9683,10 +9683,12 @@ function showConv(id){
   }
 }
 function themeDot(v){ return v==null?'#9ca3af':v>=70?'#16a34a':v>=40?'#d97706':'#dc2626'; }
+// Renders an absolute ISO timestamp in the VIEWER's local timezone, with the tz label
+// (e.g. "Jul 1, 04:33 PM GMT+2") so it's clear the time is shown in your timezone.
 function fmtDT(iso){
   if(!iso) return '';
   const d=new Date(iso); if(isNaN(d)) return '';
-  return d.toLocaleString(undefined,{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+  return d.toLocaleString(undefined,{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',timeZoneName:'short'});
 }
 let CF_ITEMS=[];
 function renderConv(){
