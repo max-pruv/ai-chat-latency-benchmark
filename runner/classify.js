@@ -41,22 +41,24 @@ export function detectHandover(text, extra = []) {
   return null;
 }
 
-// A conversation is a VALID data point iff it either hit a real handover (a genuine
-// finding — the AI bailed to a human) OR produced enough cleanly-timed AI answers.
-// Otherwise it's NOISE (chip-menu / offline / pure timeout) and must be excluded from
-// the report, never shown as a latency-less conversation.
+// A conversation is a VALID data point iff it produced enough cleanly-timed AI answers.
+// This is a LATENCY benchmark: a conversation with no measured latency is not a data
+// point — even if the AI handed over. A handover with zero timed answers is still
+// "no latency tracked" and is EXCLUDED as noise (chip-menu / offline / pure timeout /
+// immediate bail). Handover behaviour is still reflected in the success rate of the
+// conversations that DO qualify (≥ minTimed timed answers, then a handover).
 export function convoValidity(turns, { minTimed = 3 } = {}) {
   turns = turns || [];
   const attempted = turns.filter((t) => !t.unsent);
   const aiAttempted = attempted.filter((t) => t.by === "ai");
   const timed = aiAttempted.filter((t) => t.complete_ms != null);
   const hadHandover = turns.some((t) => t.handover);
-  const valid = hadHandover || timed.length >= minTimed;
+  const valid = timed.length >= minTimed;
   return {
     valid,
     timed: timed.length,
     aiAttempted: aiAttempted.length,
     hadHandover,
-    reason: valid ? null : `no handover and only ${timed.length} timed AI answer(s) — menu/offline/timeout noise`,
+    reason: valid ? null : `only ${timed.length} timed AI answer(s) (need ${minTimed}) — no measurable latency`,
   };
 }

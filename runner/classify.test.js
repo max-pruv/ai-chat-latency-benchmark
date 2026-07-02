@@ -60,8 +60,16 @@ test("convoValidity: no timed answers + no handover = INVALID (menu/offline/time
   assert.equal(v.timed, 0);
 });
 
-test("convoValidity: a genuine handover is a VALID finding even with few timed turns", () => {
+test("convoValidity: a handover with too few timed answers is still INVALID (no latency to report)", () => {
+  // Immediate/early bail (e.g. Yuma/Meta) has a handover but < minTimed measured answers.
   const turns = [aiTurn(9000), aiTurn(8000), { by: "human", complete_ms: null, handover: true }];
+  const v = convoValidity(turns);
+  assert.equal(v.valid, false);          // 2 timed < 3 → excluded despite handover
+  assert.equal(v.hadHandover, true);
+});
+
+test("convoValidity: enough timed answers THEN a handover = VALID (real latency + a finding)", () => {
+  const turns = [aiTurn(9000), aiTurn(8000), aiTurn(7000), aiTurn(6000), { by: "human", complete_ms: null, handover: true }];
   const v = convoValidity(turns);
   assert.equal(v.valid, true);
   assert.equal(v.hadHandover, true);
@@ -79,10 +87,10 @@ test("convoValidity: 2 timed and no handover = INVALID (below minTimed=3)", () =
 
 test("convoValidity: 'unsent' post-handover placeholders don't count as attempts", () => {
   const turns = [
-    aiTurn(9000), aiTurn(8000), { by: "human", complete_ms: null, handover: true },
+    aiTurn(9000), aiTurn(8000), aiTurn(7000), { by: "human", complete_ms: null, handover: true },
     { by: "human", unsent: true, complete_ms: null }, { by: "human", unsent: true, complete_ms: null },
   ];
   const v = convoValidity(turns);
   assert.equal(v.valid, true);
-  assert.equal(v.aiAttempted, 2);
+  assert.equal(v.aiAttempted, 3);
 });
