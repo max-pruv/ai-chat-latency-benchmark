@@ -18,7 +18,7 @@ MODE_ARG="--skip-candidates"
 if [ "$1" = "headed" ]; then MODE_ARG='--headed'; fi
 echo "▶ CAPTURE-ONLY ($MODE_ARG) — run-date $DATE — static report (no auto-refresh)"
 
-CONC=3; [ "$1" = "headed" ] && CONC=2
+CONC=3; [ "$1" = "headed" ] && CONC=1   # headed=1: the machine (user's Chrome + system) is often loaded; parallel headed browsers deadlock
 for i in $(seq 1 200); do
   echo "── pass $i @ $(date +%H:%M:%S) ──"
   OUT=$(TURN_TIMEOUT_MS=70000 RUN_DATE="$DATE" node run.js $MODE_ARG --concurrency $CONC 2>&1)
