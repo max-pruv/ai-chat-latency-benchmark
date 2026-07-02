@@ -466,6 +466,7 @@ export const STORES = [
   // ---- Added on request (refresh). Detected chat tech in comments. ----
   { key: "sierra-scotts",  vendor: "Sierra",  store: "Scotts Miracle-Gro", url: "https://scottsmiraclegro.com/", widget: "sierra" },
   { key: "yuma-tediber",   vendor: "Yuma",    store: "Tediber",            url: "https://www.tediber.com/",      widget: "gorgias", locale: "fr-FR" }, // Yuma runs behind Gorgias Chat
+  { key: "yuma-glossier",  vendor: "Yuma",    store: "Glossier",           url: "https://www.glossier.com/",     widget: "gorgias" }, // Yuma customer; front-end is Gorgias Chat (config.gorgias verified)
   { key: "envive-kut",     vendor: "Envive",  store: "Kut from the Kloth", url: "https://www.kutfromthekloth.com/", widget: "gorgias" }, // chat shell is Gorgias
   { key: "repai-fresh",    vendor: "Rep AI",  store: "Fresh Roasted Coffee", url: "https://www.freshroastedcoffee.com/", widget: "repai", candidate: true },
   { key: "kodif-dsc",      vendor: "Kodif",   store: "Dollar Shave Club",  url: "https://us.dollarshaveclub.com/", widget: "kodif", candidate: true },
